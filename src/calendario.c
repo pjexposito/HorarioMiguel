@@ -260,17 +260,36 @@ void CapaLineas_update_callback(Layer *me, GContext* ctx)
       for (int x=0; x<13; x++)
       {
       graphics_fill_rect(ctx,GRect(25, 24+(x*22), 138, 11),0,GCornerNone );
-      graphics_draw_text(ctx, "10:00 - 15:00 21:00 - 00:30", fonts_get_system_font(FUENTE), GRect(20, 20+(x*22), 143, 7), GTextOverflowModeTrailingEllipsis, GTextAlignmentCenter, NULL);
+      graphics_draw_text(ctx, "10:00-15:00", fonts_get_system_font(FUENTE), GRect(24, 20+(x*22), 90, 7), GTextOverflowModeFill , GTextAlignmentLeft, NULL);
+      graphics_draw_text(ctx, "21:00-00:30", fonts_get_system_font(FUENTE), GRect(85, 20+(x*22), 100, 7), GTextOverflowModeFill , GTextAlignmentLeft, NULL);
+
+        //graphics_draw_text(ctx, "21:00-00:30", fonts_get_system_font(FUENTE), GRect(13, 20+(x*22), 143, 7), GTextOverflowModeTrailingEllipsis, GTextAlignmentCenter, NULL);
+
       }  
   
   // Y los cuadros en los horarios
       graphics_context_set_fill_color(ctx, GColorBlack );
-  
+      // El 0 equivale a las 10, 1 = 11, 2 = 12, 3 = 13, 4 = 14, 5 = 15, 6 = 16, 7 = 17, 8 = 18, 9 = 19
+      // 10 = 20, 11 = 21, 12 = 22, 13 = 23, 14 = 00, 15 = 01
+    
+      /*
+      RANGO COMPLETO
+      
       for (int x=0; x<15; x++)
       {  
       graphics_fill_rect(ctx,GRect(25+(x*8), 14, 7, 9),0,GCornerNone );
       }
-      //graphics_fill_rect(ctx,GRect(33, 14, 7, 9),0,GCornerNone );
+      */
+  
+      for (int x=0; x<5; x++)
+      {  
+      graphics_fill_rect(ctx,GRect(25+(x*8), 14, 7, 9),0,GCornerNone );
+      }
+      for (int x=11; x<15; x++)
+      {  
+      graphics_fill_rect(ctx,GRect(25+(x*8), 14, 7, 9),0,GCornerNone );
+      }  
+  
       for (int x=0; x<7; x++)
       { 
       graphics_fill_rect(ctx,GRect(25, 14+(x*22), 7, 9),0,GCornerNone );
