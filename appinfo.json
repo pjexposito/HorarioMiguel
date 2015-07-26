@@ -1,0 +1,50 @@
+{
+    "appKeys": {},
+    "capabilities": [
+        ""
+    ],
+    "companyName": "pjexposito@gmail.com",
+    "longName": "Horario Miguel",
+    "projectType": "native",
+    "resources": {
+        "media": [
+            {
+                "file": "images/icono.png",
+                "menuIcon": true,
+                "name": "IMAGEN_ICONO",
+                "type": "png"
+            },
+            {
+                "file": "images/abajo.png",
+                "name": "ICONO_ABAJO",
+                "type": "png"
+            },
+            {
+                "file": "images/arriba.png",
+                "name": "ICONO_ARRIBA",
+                "type": "png"
+            },
+            {
+                "file": "images/play.png",
+                "name": "ICONO_PLAY",
+                "type": "png"
+            },
+            {
+                "file": "images/pulsar.png",
+                "name": "ICON_PULSAR",
+                "type": "png"
+            }
+        ]
+    },
+    "sdkVersion": "3",
+    "shortName": "Horario",
+    "targetPlatforms": [
+        "aplite",
+        "basalt"
+    ],
+    "uuid": "0af77e7c-853a-474c-a076-b96e883987f0",
+    "versionLabel": "1.0",
+    "watchapp": {
+        "watchface": false
+    }
+}
