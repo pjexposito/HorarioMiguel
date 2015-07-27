@@ -58,9 +58,6 @@ int turnos[20][33];
 
 int cargando=0;
 
-static const char *nombre_turno[9] =
-{"vacio", "M", "T", "AA", "AT", "L", "FA", "FT", "D"};
-
 
 
 // Matriz básica para transformar el número de mes en el nombre del mes.
@@ -250,9 +247,20 @@ void CapaLineas_update_callback(Layer *me, GContext* ctx)
   // Se pintan los datos variables
   
   // Los días de la semana
-    for (int x=0; x<13; x++)
+  // mes, ano, dia_actual
+  int dia_semana = dweek(ano,mes,dia_actual);
+  int lunes = dia_actual-(dia_semana-1);
+
+  for (int x=0; x<7; x++)
       {
-      graphics_draw_text(ctx, "10", fonts_get_system_font(FUENTE), GRect(0, 20+(x*22), 23, 7), GTextOverflowModeTrailingEllipsis, GTextAlignmentCenter, NULL);
+      int dia_a_pintar = lunes +x;
+      if (dia_a_pintar > numero_de_dias(mes,ano)) 
+        dia_a_pintar = dia_a_pintar - numero_de_dias(mes,ano);
+      if (dia_a_pintar < 1)
+        dia_a_pintar = numero_de_dias(mes-1,ano) - dia_a_pintar;
+      char temp_dia[4];
+      snprintf(temp_dia, 4, "%i",dia_a_pintar);
+      graphics_draw_text(ctx, temp_dia, fonts_get_system_font(FUENTE), GRect(0, 20+(x*22), 23, 7), GTextOverflowModeTrailingEllipsis, GTextAlignmentCenter, NULL);
       }  
   
   // Los horarios en las celdas
