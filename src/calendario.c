@@ -58,7 +58,9 @@ int turnos[20][33];
 
 int cargando=0;
 
-
+struct Fecha{
+    int dia, mes, ano;
+};
 
 // Matriz básica para transformar el número de mes en el nombre del mes.
 static const char *nombre_mes[13] =
@@ -73,6 +75,8 @@ static Window *window;
 
 //Capas del reloj
 Layer *CapaLineas; // La capa principal donde se dibuja el calendario
+
+
 
 
 // Este código no es mío, así que poco puedo comentar. El caso es que funciona perfectamente.
@@ -136,6 +140,29 @@ int get_yday(int mon, int day, int year)
     int leap = yisleap(year);
 
     return days[leap][mon] + day;
+}
+
+
+// Función chapucera creada por mi. Devuelve un struct de tipo Fecha al darle un año y los dias
+struct Fecha devuelve_fecha(ano, dias)
+{
+    struct Fecha valor_retorno;
+    int days_in_month[13] = { 0, 31, 28+yisleap(ano), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+    int x, mes, dia, suma=0;
+    for (x=1;x<14;x++)
+    {
+      suma = suma+days_in_month[x];
+      if (suma >= dias)
+        {
+        mes = x;
+        dia = -(suma-days_in_month[x]-dias);
+        x = 14;
+        }
+    }
+    valor_retorno.dia = dia;
+    valor_retorno.mes = mes;
+    valor_retorno.ano = ano;
+    return valor_retorno;
 }
 
 
@@ -213,11 +240,19 @@ void CapaLineas_update_callback(Layer *me, GContext* ctx)
     graphics_context_set_text_color(ctx, COLOR_PRINCIPAL);  
 
     // Se pinta los carácteres fijos
-    graphics_draw_text(ctx, "10", fonts_get_system_font(FUENTE), GRect(18, -2, 12, 7), GTextOverflowModeTrailingEllipsis, GTextAlignmentCenter, NULL);
-    graphics_draw_text(ctx, "15", fonts_get_system_font(FUENTE), GRect(58, -2, 12, 7), GTextOverflowModeTrailingEllipsis, GTextAlignmentCenter, NULL);
-    graphics_draw_text(ctx, "20", fonts_get_system_font(FUENTE), GRect(99, -2, 12, 7), GTextOverflowModeTrailingEllipsis, GTextAlignmentCenter, NULL);
-    graphics_draw_text(ctx, "00", fonts_get_system_font(FUENTE), GRect(130, -2, 12, 7), GTextOverflowModeTrailingEllipsis, GTextAlignmentCenter, NULL);
-
+    if (chkturnos)
+    {  
+      graphics_draw_text(ctx, "10", fonts_get_system_font(FUENTE), GRect(18, -2, 12, 7), GTextOverflowModeTrailingEllipsis, GTextAlignmentCenter, NULL);
+      graphics_draw_text(ctx, "15", fonts_get_system_font(FUENTE), GRect(58, -2, 12, 7), GTextOverflowModeTrailingEllipsis, GTextAlignmentCenter, NULL);
+      graphics_draw_text(ctx, "20", fonts_get_system_font(FUENTE), GRect(99, -2, 12, 7), GTextOverflowModeTrailingEllipsis, GTextAlignmentCenter, NULL);
+      graphics_draw_text(ctx, "00", fonts_get_system_font(FUENTE), GRect(130, -2, 12, 7), GTextOverflowModeTrailingEllipsis, GTextAlignmentCenter, NULL);
+    }
+    else
+    {
+      char temp_fecha[30];
+      snprintf(temp_fecha, 30, "%s de %d",nombre_mes[mes],ano);
+      graphics_draw_text(ctx, temp_fecha, fonts_get_system_font(FUENTE), GRect(1, -3, 140, 7), GTextOverflowModeTrailingEllipsis, GTextAlignmentCenter, NULL);
+    }
     graphics_draw_text(ctx, "Lun", fonts_get_system_font(FUENTE), GRect(0, 10, 23, 7), GTextOverflowModeTrailingEllipsis, GTextAlignmentCenter, NULL);
     graphics_draw_text(ctx, "Mar", fonts_get_system_font(FUENTE), GRect(0, 32, 23, 7), GTextOverflowModeTrailingEllipsis, GTextAlignmentCenter, NULL);
     graphics_draw_text(ctx, "Mie", fonts_get_system_font(FUENTE), GRect(0, 54, 23, 7), GTextOverflowModeTrailingEllipsis, GTextAlignmentCenter, NULL);
@@ -257,6 +292,20 @@ void CapaLineas_update_callback(Layer *me, GContext* ctx)
         graphics_fill_rect(ctx, GRect(24+(x*8), 13, 1, 155), 0, GCornerNone);
 
     
+  //Si se quiere usar los datos en bruto:
+  // ******************************
+  // ******************************
+  /*
+    int ano = 2015;
+    int dias = 208;
+    struct fecha a;
+    a = devuelve_fecha(ano, dias);
+    printf("Dia: %d, mes %d, ano: %d\n", a.dia, a.mes, a.ano);
+    
+    // Al contrario es:
+    printf("Es el dia: %d\n", get_yday(a.mes, a.dia, a.ano));
+   */
+  
   
   // Se pintan los datos variables
   
@@ -303,6 +352,8 @@ void CapaLineas_update_callback(Layer *me, GContext* ctx)
       }
       */
   
+  
+  // EJEMPLOS
       for (int x=0; x<5; x++)
       {  
       graphics_fill_rect(ctx,GRect(25+(x*8), 14, 7, 9),0,GCornerNone );
@@ -311,7 +362,17 @@ void CapaLineas_update_callback(Layer *me, GContext* ctx)
       {  
       graphics_fill_rect(ctx,GRect(25+(x*8), 14, 7, 9),0,GCornerNone );
       }  
+        
+      for (int x=8; x<11; x++)
+      {  
+      graphics_fill_rect(ctx,GRect(25+(x*8), 14+22, 7, 9),0,GCornerNone );
+      }  
+      for (int x=1; x<4; x++)
+      {  
+      graphics_fill_rect(ctx,GRect(25+(x*8), 14+44, 7, 9),0,GCornerNone );
+      }    
   
+  // FIN DE EJEMPLO
       for (int x=0; x<7; x++)
       { 
       graphics_fill_rect(ctx,GRect(25, 14+(x*22), 7, 9),0,GCornerNone );
@@ -395,8 +456,8 @@ void window_load(Window *window)
     mes_actual = mes;
     ano = tick_time->tm_year+1900;
     
-    // Se establece chkturnos a 1 para mostrar el calendario de turnos en primer lugar. Si es 0, se muestran los días
-    chkturnos=1;
+    // Se establece chkturnos a 0 para mostrar el mes y el año. Si es 1, se muestran horas en la zona superior
+    chkturnos=0;
     
     // Línea de DEBUG, por si acaso. Debe estar desactivada siempre que sea posible
     //APP_LOG(APP_LOG_LEVEL_DEBUG, "El primer dia del mes %i, del año %i es %i", mes, ano, dweek(ano,mes,dia));
