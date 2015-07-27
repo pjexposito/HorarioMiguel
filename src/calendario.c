@@ -121,8 +121,22 @@ int dweek(int year, int month, int day)
     return conv[h];
    }
 
+// Otro código que no es mio. Es de http://stackoverflow.com/questions/19377396/c-get-day-of-year-from-date
+int yisleap(int year)
+{
+    return (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
+}
 
+int get_yday(int mon, int day, int year)
+{
+    static const int days[2][13] = {
+        {0, 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334},
+        {0, 0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335}
+    };
+    int leap = yisleap(year);
 
+    return days[leap][mon] + day;
+}
 
 
 void anade_datos(const char* input, int mes)
@@ -248,8 +262,8 @@ void CapaLineas_update_callback(Layer *me, GContext* ctx)
   
   // Los días de la semana
   // mes, ano, dia_actual
-  int dia_semana = dweek(ano,mes,dia_actual);
-  int lunes = dia_actual-(dia_semana-1);
+  int dia_semana = dweek(ano,mes,dia);
+  int lunes = dia-(dia_semana-1);
 
   for (int x=0; x<7; x++)
       {
@@ -308,12 +322,22 @@ void CapaLineas_update_callback(Layer *me, GContext* ctx)
 
 // Se pulsa el botón arriba
 static void up_click_handler(ClickRecognizerRef recognizer, void *context) {
-    mes--;
+    for (int x=0; x<7;x++)
+    {
+      dia = dia-1; 
+      if (dia < 1) 
+      {
+        mes = mes-1;
+        dia = numero_de_dias(mes,ano);
+      }
+    }
     if (mes==0)
     {
         mes = 12;
         ano--;
     }
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "%d/%d/%d. Dia del año: %d", dia, mes, ano, get_yday(mes, dia, ano));
+
     layer_mark_dirty(CapaLineas);
     // Se resta un mes al actual y si el mes es inferior a 1, se resta un año
 }
@@ -332,12 +356,22 @@ void select_click_handler(ClickRecognizerRef recognizer, void *context) {
 
 // Se pulsa el botón abajo
 void down_click_handler(ClickRecognizerRef recognizer, void *context) {
-    mes++;
+    for (int x=0; x<7;x++)
+    {
+      dia = dia+1; 
+      if (dia > numero_de_dias(mes,ano)) 
+      {
+        dia = 1;
+        mes = mes+1;
+      }
+    }
     if (mes==13)
     {
         mes = 1;
         ano++;
     }
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "%d/%d/%d. Dia del año: %d", dia, mes, ano, get_yday(mes, dia, ano));
+
     layer_mark_dirty(CapaLineas);
     // Se suma un mes al actual, y si supera el 12, se suma un año
 }
@@ -353,10 +387,10 @@ void window_load(Window *window)
 {
     //funcion para saber el día, el mes y el año actual
  
-    dia=1;
     time_t now = time(NULL);
     struct tm *tick_time = localtime(&now); 
     dia_actual = tick_time->tm_mday;
+    dia = dia_actual;
     mes = tick_time->tm_mon+1;
     mes_actual = mes;
     ano = tick_time->tm_year+1900;
