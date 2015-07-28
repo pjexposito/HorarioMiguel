@@ -59,7 +59,9 @@ int turnos[20][33];
 int cargando=0;
 
 struct Fecha{
-    int dia, mes, ano;
+    int dia;
+    int mes; 
+    int ano;
 };
 
 // Matriz básica para transformar el número de mes en el nombre del mes.
@@ -144,11 +146,11 @@ int get_yday(int mon, int day, int year)
 
 
 // Función chapucera creada por mi. Devuelve un struct de tipo Fecha al darle un año y los dias
-struct Fecha devuelve_fecha(ano, dias)
+struct Fecha devuelve_fecha(int ano, int dias)
 {
     struct Fecha valor_retorno;
     int days_in_month[13] = { 0, 31, 28+yisleap(ano), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
-    int x, mes, dia, suma=0;
+    int x, mes=1, dia=1, suma=0;
     for (x=1;x<14;x++)
     {
       suma = suma+days_in_month[x];
@@ -163,6 +165,26 @@ struct Fecha devuelve_fecha(ano, dias)
     valor_retorno.mes = mes;
     valor_retorno.ano = ano;
     return valor_retorno;
+}
+
+
+char * hex2bin(char * hex) {
+	// your code goes here
+    int resta;
+    const char binary[16][5] = {"0000", "0001", "0010", "0011", "0100", "0101","0110", "0111", "1000", "1001", "1010", "1011", "1100", "1101", "1110","1111"};
+    static char bin[16];
+    char  a;
+    int x=0;
+    do {
+        a = hex[x];
+        resta = (a > 64) ? 55 : 48;
+        if (x == 0) 
+            strcpy(bin, binary[a-resta]);
+        else
+            strcat(bin, binary[a-resta]);
+        x++;
+    } while (hex[x] != '\0');
+	return bin;
 }
 
 
@@ -398,7 +420,7 @@ static void up_click_handler(ClickRecognizerRef recognizer, void *context) {
         ano--;
     }
     APP_LOG(APP_LOG_LEVEL_DEBUG, "%d/%d/%d. Dia del año: %d", dia, mes, ano, get_yday(mes, dia, ano));
-
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "%s es %s", "FFFF", hex2bin("FFFF"));
     layer_mark_dirty(CapaLineas);
     // Se resta un mes al actual y si el mes es inferior a 1, se resta un año
 }
