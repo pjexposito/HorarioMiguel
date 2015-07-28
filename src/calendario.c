@@ -350,7 +350,7 @@ void CapaLineas_update_callback(Layer *me, GContext* ctx)
   
   // Los horarios en las celdas
       graphics_context_set_fill_color(ctx, GColorWhite );
-      for (int x=0; x<13; x++)
+      for (int x=0; x<7; x++)
       {
       graphics_fill_rect(ctx,GRect(25, 24+(x*22), 138, 11),0,GCornerNone );
       graphics_draw_text(ctx, "10:00-15:00", fonts_get_system_font(FUENTE), GRect(24, 20+(x*22), 90, 7), GTextOverflowModeFill , GTextAlignmentLeft, NULL);
@@ -376,6 +376,7 @@ void CapaLineas_update_callback(Layer *me, GContext* ctx)
   
   
   // EJEMPLOS
+  /*
       for (int x=0; x<5; x++)
       {  
       graphics_fill_rect(ctx,GRect(25+(x*8), 14, 7, 9),0,GCornerNone );
@@ -389,15 +390,45 @@ void CapaLineas_update_callback(Layer *me, GContext* ctx)
       {  
       graphics_fill_rect(ctx,GRect(25+(x*8), 14+22, 7, 9),0,GCornerNone );
       }  
-      for (int x=1; x<4; x++)
-      {  
-      graphics_fill_rect(ctx,GRect(25+(x*8), 14+44, 7, 9),0,GCornerNone );
-      }    
-  
+      */
   // FIN DE EJEMPLO
-      for (int x=0; x<7; x++)
+  
+  
+      for (int y=0; y<7; y++)
       { 
-      graphics_fill_rect(ctx,GRect(25, 14+(x*22), 7, 9),0,GCornerNone );
+        // ********* EJEMPLO CON BINARIOS ********
+        char * temp_bin = hex2bin("F81F");
+        int inicio1=-1, inicio2=-1, fin1=-1, fin2=-1;
+        for (int x=0; x<15; x++)
+        { 
+        if (temp_bin[x]=='1')  
+          {
+            if (inicio1<0) inicio1 = x;
+            if (fin1>0) 
+              if (inicio2<0) inicio2 = x;
+            graphics_context_set_fill_color(ctx, GColorBlack );
+
+            graphics_fill_rect(ctx,GRect(25+(x*8), 14+(22*y), 7, 9),0,GCornerNone );
+          }
+        else
+         {
+            if (fin1<0) fin1 = x;
+            if (fin1 > 0)
+              if (fin2<0) fin2 = x;
+          }
+        }
+      char temp_horario[12];
+      char temp_horario2[12];
+
+      snprintf(temp_horario, 12, "%d:00-%d:00",inicio1+10, fin1+10);
+      snprintf(temp_horario2, 12, "%d:00-%d:00",inicio2+10, fin2+10);
+
+      graphics_context_set_fill_color(ctx, GColorWhite );
+
+      graphics_fill_rect(ctx,GRect(25, 24+(y*22), 138, 11),0,GCornerNone );
+      graphics_draw_text(ctx, temp_horario, fonts_get_system_font(FUENTE), GRect(24, 20+(y*22), 90, 7), GTextOverflowModeFill , GTextAlignmentLeft, NULL);
+      graphics_draw_text(ctx, temp_horario2, fonts_get_system_font(FUENTE), GRect(85, 20+(y*22), 100, 7), GTextOverflowModeFill , GTextAlignmentLeft, NULL);
+
       }  
       //graphics_fill_rect(ctx,GRect(25, 36, 7, 9),0,GCornerNone );
   
