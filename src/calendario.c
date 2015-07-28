@@ -397,9 +397,9 @@ void CapaLineas_update_callback(Layer *me, GContext* ctx)
       for (int y=0; y<7; y++)
       { 
         // ********* EJEMPLO CON BINARIOS ********
-        char * temp_bin = hex2bin("F81F");
+        char * temp_bin = hex2bin("FF38");
         int inicio1=-1, inicio2=-1, fin1=-1, fin2=-1;
-        for (int x=0; x<15; x++)
+        for (int x=0; x<16; x++)
         { 
         if (temp_bin[x]=='1')  
           {
@@ -407,19 +407,18 @@ void CapaLineas_update_callback(Layer *me, GContext* ctx)
             if (fin1>0) 
               if (inicio2<0) inicio2 = x;
             graphics_context_set_fill_color(ctx, GColorBlack );
-
             graphics_fill_rect(ctx,GRect(25+(x*8), 14+(22*y), 7, 9),0,GCornerNone );
           }
         else
          {
             if (fin1<0) fin1 = x;
-            if (fin1 > 0)
+            if (inicio2>0) 
               if (fin2<0) fin2 = x;
           }
         }
+      if (fin2>13) fin2=fin2-24;
       char temp_horario[12];
       char temp_horario2[12];
-
       snprintf(temp_horario, 12, "%d:00-%d:00",inicio1+10, fin1+10);
       snprintf(temp_horario2, 12, "%d:00-%d:00",inicio2+10, fin2+10);
 
