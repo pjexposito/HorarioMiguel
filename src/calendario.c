@@ -419,7 +419,7 @@ void CapaLineas_update_callback(Layer *me, GContext* ctx)
         for (int x=valor_inicial;x<valor_final;x++)
           graphics_fill_rect(ctx,GRect(25+(x*2), 14+(22*y), 2, 9),0,GCornerNone );
 
-        snprintf(temp_horario, 12, "%d:%d-%d:%d",hora_inicio, minuto_inicio, hora_fin, minuto_fin);
+        snprintf(temp_horario, 12, "%02d:%02d-%02d:%02d",hora_inicio, minuto_inicio, hora_fin, minuto_fin);
         graphics_context_set_fill_color(ctx, GColorWhite );
         graphics_fill_rect(ctx,GRect(25, 24+(y*22), 138, 11),0,GCornerNone );
         graphics_draw_text(ctx, temp_horario, fonts_get_system_font(FUENTE), GRect(24, 20+(y*22), 90, 7), GTextOverflowModeFill , GTextAlignmentLeft, NULL);
