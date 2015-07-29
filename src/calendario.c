@@ -72,6 +72,17 @@ struct Fecha{
     int ano;
 };
 
+struct Horario{
+    int hora_inicio;
+    int hora_fin; 
+    int minuto_inicio;
+    int minuto_fin;
+    int hora2_inicio;
+    int hora2_fin; 
+    int minuto2_inicio;
+    int minuto2_fin;
+};
+
 // Matriz básica para transformar el número de mes en el nombre del mes.
 static const char *nombre_mes[13] =
 { "vacio", "enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre",
@@ -218,11 +229,48 @@ void char2horario(char * cadena) {
         APP_LOG(APP_LOG_LEVEL_DEBUG, "%c es %s", a, todos_los_horarios[resta]);
         x++;
     } while (cadena[x] != '\0');
-  
-  
-  
 }
 
+struct Horario devuelve_horario(char * clave_horario) {
+  struct Horario valor_devuelto;
+  char dest[2];
+  static char cadena[24];
+  strcpy(cadena, todos_los_horarios[(clave_horario[0]-48)]);
+  strcat(cadena, "-");
+  strcat(cadena, todos_los_horarios[(clave_horario[1]-48)]);
+  strcat(cadena, " ");
+  strcat(cadena, todos_los_horarios[(clave_horario[2]-48)]);
+  strcat(cadena, "-");
+  strcat(cadena, todos_los_horarios[(clave_horario[3]-48)]);
+
+  memset(dest, 0, 2);
+  subString (cadena, 0, 2, dest);
+  valor_devuelto.hora_inicio = atoi(dest);
+  memset(dest, 0, 2);
+  subString (cadena, 3, 2, dest);
+  valor_devuelto.minuto_inicio = atoi(dest);
+  memset(dest, 0, 2);
+  subString (cadena, 6, 2, dest);
+  valor_devuelto.hora_fin = atoi(dest);
+  memset(dest, 0, 2);
+  subString (cadena, 9, 2, dest);
+  valor_devuelto.minuto_fin = atoi(dest);
+  
+  memset(dest, 0, 2);
+  subString (cadena, 12, 2, dest);
+  valor_devuelto.hora2_inicio = atoi(dest);
+  memset(dest, 0, 2);
+  subString (cadena, 15, 2, dest);
+  valor_devuelto.minuto2_inicio = atoi(dest);
+  memset(dest, 0, 2);
+  subString (cadena, 18, 2, dest);
+  valor_devuelto.hora2_fin = atoi(dest);
+  memset(dest, 0, 2);
+  subString (cadena, 21, 2, dest);
+  valor_devuelto.minuto2_fin = atoi(dest);
+  return valor_devuelto;
+  
+}
 
 void anade_datos(const char* input, int mes)
 {
@@ -404,25 +452,41 @@ void CapaLineas_update_callback(Layer *me, GContext* ctx)
   // Formula es 4*(hora-10). Por lo tanto, las 12 = 4*(12-10) = 4*2 = 8. La posicion 8 son las 12.
   // Por ello, para pintar hasta las 12, el valor final de x en el for debe ser 12.
   // PINTO CON EL MÉTODO NUEVO
-  
+
       for (int y=0; y<7; y++)
       {
-        char temp_horario[12];
-        int hora_inicio = 10;
-        int minuto_inicio = 15;
-        int hora_fin = 1;
-        int minuto_fin = 00;
-        int valor_inicial = (4*(hora_inicio-10)) + (minuto_inicio/15);
-        int valor_final = (4*(((hora_fin <2) ? 24+hora_fin : hora_fin) -10)) + (minuto_fin/15);
+        char temp_horario1[12];
+        char temp_horario2[12];
 
+        struct Horario valor_devuelto;
+        int valor_inicial, valor_final;
+        
         graphics_context_set_fill_color(ctx, GColorBlack );
+
+        // Primera tanda
+        valor_devuelto = devuelve_horario("0>Lj");
+        valor_inicial = (4*(valor_devuelto.hora_inicio-10)) + (valor_devuelto.minuto_inicio/15);
+        valor_final = (4*(((valor_devuelto.hora_fin <2) ? 24+valor_devuelto.hora_fin : valor_devuelto.hora_fin) -10)) + (valor_devuelto.minuto_fin/15);
+        
         for (int x=valor_inicial;x<valor_final;x++)
           graphics_fill_rect(ctx,GRect(25+(x*2), 14+(22*y), 2, 9),0,GCornerNone );
 
-        snprintf(temp_horario, 12, "%02d:%02d-%02d:%02d",hora_inicio, minuto_inicio, hora_fin, minuto_fin);
+        snprintf(temp_horario1, 12, "%02d:%02d-%02d:%02d",valor_devuelto.hora_inicio, valor_devuelto.minuto_inicio, valor_devuelto.hora_fin, valor_devuelto.minuto_fin);
+        
+        // Segunda tanda
+        valor_inicial = (4*(valor_devuelto.hora2_inicio-10)) + (valor_devuelto.minuto2_inicio/15);
+        valor_final = (4*(((valor_devuelto.hora2_fin <2) ? 24+valor_devuelto.hora2_fin : valor_devuelto.hora2_fin) -10)) + (valor_devuelto.minuto2_fin/15);
+        
+        for (int x=valor_inicial;x<valor_final;x++)
+          graphics_fill_rect(ctx,GRect(25+(x*2), 14+(22*y), 2, 9),0,GCornerNone );
+
+        snprintf(temp_horario2, 12, "%02d:%02d-%02d:%02d",valor_devuelto.hora2_inicio, valor_devuelto.minuto2_inicio, valor_devuelto.hora2_fin, valor_devuelto.minuto2_fin);
+      
+        
         graphics_context_set_fill_color(ctx, GColorWhite );
         graphics_fill_rect(ctx,GRect(25, 24+(y*22), 138, 11),0,GCornerNone );
-        graphics_draw_text(ctx, temp_horario, fonts_get_system_font(FUENTE), GRect(24, 20+(y*22), 90, 7), GTextOverflowModeFill , GTextAlignmentLeft, NULL);
+        graphics_draw_text(ctx, temp_horario1, fonts_get_system_font(FUENTE), GRect(24, 20+(y*22), 90, 7), GTextOverflowModeFill , GTextAlignmentLeft, NULL);
+        graphics_draw_text(ctx, temp_horario2, fonts_get_system_font(FUENTE), GRect(85, 20+(y*22), 100, 7), GTextOverflowModeFill , GTextAlignmentLeft, NULL);
 
       }
   
