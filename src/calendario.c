@@ -2,6 +2,9 @@
 #include "calendario.h"
 #include "funciones.h"
 
+#define PERSIST_KEY_DATOS 10
+
+
   
 #define MESES_TURNOS 20
 
@@ -51,6 +54,11 @@
 // La variable chkturnos puede tener valor 1 si se muestra el calendario de turnos y valor 0 si se muestra el de días.
 // Se define de forma global las variables día, mes y año (dado que pueden cambiar a lo largo de la ejecución)
 // Mes_actual y dia_actual siempre guardarán el valor del día y el mes en el que se ejecuta el programa (no varían)
+
+typedef unsigned char uint8;
+typedef unsigned short uint16;
+typedef unsigned int uint;
+
 int dia, mes, ano, mes_actual, dia_actual, chkturnos;
 
 int turnos[20][33];
@@ -69,6 +77,19 @@ static const char *nombre_mes[13] =
 { "vacio", "enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre",
     "noviembre", "diciembre" };
 
+static const char *todos_los_horarios[62] =
+  { "10:00", "10:15", "10:30", "10:45", "11:00", "11:15", "11:30", "11:45", "12:00", "12:15", "12:30", "12:45", 
+    "13:00", "13:15", "13:30", "13:45", "14:00", "14:15", "14:30", "14:45", "15:00", "15:15", "15:30", "15:45", 
+    "16:00", "16:15", "16:30", "16:45", "17:00", "17:15", "17:30", "17:45", "18:00", "18:15", "18:30", "18:45", 
+    "19:00", "19:15", "19:30", "19:45", "20:00", "20:15", "20:30", "20:45", "20:00", "21:15", "21:30", "21:45", 
+    "22:00", "22:15", "22:30", "22:45", "23:00", "23:15", "23:30", "23:45", "00:00", "00:15", "00:30", "00:45", 
+    "01:00", "L" };
+
+// Para un horario como 10:00-13:30  17:00-01:00 sería algo así
+//                      0 14  28 60
+// Ahora sumo 48 a cada número, siendo 0, por ejemplo, 48 para que equivalga a 0
+//                      48 62  76 108
+// Quedando de ese modo  0 > L l, o quitando espacios, como 0>Ll 
 
 
 // Ventana principal
@@ -185,6 +206,21 @@ char * hex2bin(char * hex) {
         x++;
     } while (hex[x] != '\0');
 	return bin;
+}
+
+void char2horario(char * cadena) {
+    char a;
+    int x=0;
+    int resta;
+    do {
+        a = cadena[x];
+        resta = a - 48;
+        APP_LOG(APP_LOG_LEVEL_DEBUG, "%c es %s", a, todos_los_horarios[resta]);
+        x++;
+    } while (cadena[x] != '\0');
+  
+  
+  
 }
 
 
@@ -362,9 +398,37 @@ void CapaLineas_update_callback(Layer *me, GContext* ctx)
   
   // Y los cuadros en los horarios
       graphics_context_set_fill_color(ctx, GColorBlack );
-      // El 0 equivale a las 10, 1 = 11, 2 = 12, 3 = 13, 4 = 14, 5 = 15, 6 = 16, 7 = 17, 8 = 18, 9 = 19
-      // 10 = 20, 11 = 21, 12 = 22, 13 = 23, 14 = 00, 15 = 01
+      // El 0 equivale a las 10:00, 1 = 10:15, 2 = 10:30, 3 = 10:45, 4 = 11:00, 5 = 11:15, 6 = 11:30
+      // 7 = 11:45, 8 = 12:00, 9 = 12:15, 10 = 12:30, 11 = 12:45, 12 = 13:00
     
+  // Formula es 4*(hora-10). Por lo tanto, las 12 = 4*(12-10) = 4*2 = 8. La posicion 8 son las 12.
+  // Por ello, para pintar hasta las 12, el valor final de x en el for debe ser 12.
+  // PINTO CON EL MÉTODO NUEVO
+  
+      for (int y=0; y<7; y++)
+      {
+        char temp_horario[12];
+        int hora_inicio = 10;
+        int minuto_inicio = 15;
+        int hora_fin = 1;
+        int minuto_fin = 00;
+        int valor_inicial = (4*(hora_inicio-10)) + (minuto_inicio/15);
+        int valor_final = (4*(((hora_fin <2) ? 24+hora_fin : hora_fin) -10)) + (minuto_fin/15);
+
+        graphics_context_set_fill_color(ctx, GColorBlack );
+        for (int x=valor_inicial;x<valor_final;x++)
+          graphics_fill_rect(ctx,GRect(25+(x*2), 14+(22*y), 2, 9),0,GCornerNone );
+
+        snprintf(temp_horario, 12, "%d:%d-%d:%d",hora_inicio, minuto_inicio, hora_fin, minuto_fin);
+        graphics_context_set_fill_color(ctx, GColorWhite );
+        graphics_fill_rect(ctx,GRect(25, 24+(y*22), 138, 11),0,GCornerNone );
+        graphics_draw_text(ctx, temp_horario, fonts_get_system_font(FUENTE), GRect(24, 20+(y*22), 90, 7), GTextOverflowModeFill , GTextAlignmentLeft, NULL);
+
+      }
+  
+  
+  
+  
       /*
       RANGO COMPLETO
       
@@ -391,13 +455,15 @@ void CapaLineas_update_callback(Layer *me, GContext* ctx)
       graphics_fill_rect(ctx,GRect(25+(x*8), 14+22, 7, 9),0,GCornerNone );
       }  
       */
+  
+  
   // FIN DE EJEMPLO
   
-  
+     /* EJEMPLO CON BINARIO (en desuso)
       for (int y=0; y<7; y++)
       { 
         // ********* EJEMPLO CON BINARIOS ********
-        char * temp_bin = hex2bin("FF38");
+        char * temp_bin = hex2bin("00FE");
         int inicio1=-1, inicio2=-1, fin1=-1, fin2=-1;
         for (int x=0; x<16; x++)
         { 
@@ -426,9 +492,13 @@ void CapaLineas_update_callback(Layer *me, GContext* ctx)
 
       graphics_fill_rect(ctx,GRect(25, 24+(y*22), 138, 11),0,GCornerNone );
       graphics_draw_text(ctx, temp_horario, fonts_get_system_font(FUENTE), GRect(24, 20+(y*22), 90, 7), GTextOverflowModeFill , GTextAlignmentLeft, NULL);
-      graphics_draw_text(ctx, temp_horario2, fonts_get_system_font(FUENTE), GRect(85, 20+(y*22), 100, 7), GTextOverflowModeFill , GTextAlignmentLeft, NULL);
+      if (fin2>-1)
+        graphics_draw_text(ctx, temp_horario2, fonts_get_system_font(FUENTE), GRect(85, 20+(y*22), 100, 7), GTextOverflowModeFill , GTextAlignmentLeft, NULL);
 
       }  
+       FIN DE EJEMPLO CON BINARIO */ 
+  
+  
       //graphics_fill_rect(ctx,GRect(25, 36, 7, 9),0,GCornerNone );
   
 }  // Y termina la función
@@ -463,7 +533,22 @@ void select_click_handler(ClickRecognizerRef recognizer, void *context) {
     else
         chkturnos=1;
     layer_mark_dirty(CapaLineas);
+    /*
+    char datos[260];
+    persist_read_string(PERSIST_KEY_DATOS, datos, PERSIST_STRING_MAX_LENGTH);
 
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "%s",datos);
+    */
+  
+  
+  
+  char2horario("0>Ll");
+  
+  
+  
+  
+  
+  
     // Se usa el select para cambiar entre calendario normal y de turnos
 }
 
@@ -551,8 +636,7 @@ void carga_calendario()
     layer_set_update_proc(CapaLineas, CapaLineas_update_callback); 
     layer_add_child(window_layer, CapaLineas); 
     
-    
-
+    //persist_write_string(PERSIST_KEY_DATOS,"5A0E0F0LPA0E0F0LPA0E0F0LPA0E0F0LPA0E0F0LPA0E0F0LPA0E0F0LPA0E0F0LPA0E0F0LPA0E0F0LPA0E0F0LPA0E0F0LPA0E0F0LPA0E0F0LPA0E0F0LPA0E0F0LPA0E0F0LPA0E0F0LPA0E0F0LPA0E0F0LPA0E0F0LPA0E0F0LPA0E0F0LPA0E0F0LPA0E0F0LPA0E0F0LPA0E0F0LPA0E0F0LPA0E0F0LPA0E0F0LPA0E0F0LPA0E0F0");
 }
 
 
