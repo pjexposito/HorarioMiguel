@@ -272,6 +272,58 @@ struct Horario devuelve_horario(char * clave_horario) {
   
 }
 
+void pinta_horario(GContext* ctx, char * codigo_horario, int y)
+{
+        // El 0 equivale a las 10:00, 1 = 10:15, 2 = 10:30, 3 = 10:45, 4 = 11:00, 5 = 11:15, 6 = 11:30
+        // 7 = 11:45, 8 = 12:00, 9 = 12:15, 10 = 12:30, 11 = 12:45, 12 = 13:00
+    
+        // Formula es 4*(hora-10). Por lo tanto, las 12 = 4*(12-10) = 4*2 = 8. La posicion 8 son las 12.
+        // Por ello, para pintar hasta las 12, el valor final de x en el for debe ser 12.
+ 
+        char temp_horario1[12];
+        char temp_horario2[12];
+        
+        struct Horario valor_devuelto;
+        int valor_inicial, valor_final;
+        
+        graphics_context_set_fill_color(ctx, GColorBlack );
+
+        if (strcmp(codigo_horario,"mmmm")==0)
+        {
+            graphics_context_set_fill_color(ctx, GColorWhite );
+            graphics_fill_rect(ctx,GRect(25, 24+(y*22), 138, 11),0,GCornerNone );
+            graphics_draw_text(ctx, "      LIBRE", fonts_get_system_font(FUENTE), GRect(24, 20+(y*22), 90, 7), GTextOverflowModeFill , GTextAlignmentLeft, NULL);
+
+        }
+        else
+        {  
+          // Primera tanda
+          valor_devuelto = devuelve_horario(codigo_horario);
+          valor_inicial = (4*(valor_devuelto.hora_inicio-10)) + (valor_devuelto.minuto_inicio/15);
+          valor_final = (4*(((valor_devuelto.hora_fin <2) ? 24+valor_devuelto.hora_fin : valor_devuelto.hora_fin) -10)) + (valor_devuelto.minuto_fin/15);
+        
+          for (int x=valor_inicial;x<valor_final;x++)
+            graphics_fill_rect(ctx,GRect(25+(x*2), 14+(22*y), 2, 9),0,GCornerNone );
+
+          snprintf(temp_horario1, 12, "%02d:%02d-%02d:%02d",valor_devuelto.hora_inicio, valor_devuelto.minuto_inicio, valor_devuelto.hora_fin, valor_devuelto.minuto_fin);
+        
+        // Segunda tanda
+          valor_inicial = (4*(valor_devuelto.hora2_inicio-10)) + (valor_devuelto.minuto2_inicio/15);
+          valor_final = (4*(((valor_devuelto.hora2_fin <2) ? 24+valor_devuelto.hora2_fin : valor_devuelto.hora2_fin) -10)) + (valor_devuelto.minuto2_fin/15);
+        
+          for (int x=valor_inicial;x<valor_final;x++)
+            graphics_fill_rect(ctx,GRect(25+(x*2), 14+(22*y), 2, 9),0,GCornerNone );
+
+          snprintf(temp_horario2, 12, "%02d:%02d-%02d:%02d",valor_devuelto.hora2_inicio, valor_devuelto.minuto2_inicio, valor_devuelto.hora2_fin, valor_devuelto.minuto2_fin);
+      
+        
+          graphics_context_set_fill_color(ctx, GColorWhite );
+          graphics_fill_rect(ctx,GRect(25, 24+(y*22), 138, 11),0,GCornerNone );
+          graphics_draw_text(ctx, temp_horario1, fonts_get_system_font(FUENTE), GRect(24, 20+(y*22), 90, 7), GTextOverflowModeFill , GTextAlignmentLeft, NULL);
+          graphics_draw_text(ctx, temp_horario2, fonts_get_system_font(FUENTE), GRect(85, 20+(y*22), 100, 7), GTextOverflowModeFill , GTextAlignmentLeft, NULL);
+        } 
+      }
+
 void anade_datos(const char* input, int mes)
 {
        //APP_LOG(APP_LOG_LEVEL_DEBUG, "Recibo %s con mes %i", input, mes);
@@ -419,79 +471,26 @@ void CapaLineas_update_callback(Layer *me, GContext* ctx)
   // mes, ano, dia_actual
   int dia_semana = dweek(ano,mes,dia);
   int lunes = dia-(dia_semana-1);
-
+  char * horario_test = "0>Ne1>Lj8>Lj0>Lj5>Lj1>Lj0>Ed0>Lj2>Lj0>Lj0>Lj7>Fj0>Lj0>Lj4>Lj0>Lj0>Hj2>Lj0>Lj0>Lj0>Lj0>Lj2>Mj1>Lj9>Lj0>Lj2>Oj4>Lj0>Lfmmmm0>Lj";
+  char dest[5];
+  // Ojo, falla al calcular los dias.
   for (int x=0; x<7; x++)
       {
       int dia_a_pintar = lunes +x;
+      memset(dest, 0, 5);
       if (dia_a_pintar > numero_de_dias(mes,ano)) 
         dia_a_pintar = dia_a_pintar - numero_de_dias(mes,ano);
       if (dia_a_pintar < 1)
         dia_a_pintar = numero_de_dias(mes-1,ano) - dia_a_pintar;
       char temp_dia[4];
+      subString (horario_test, (dia_a_pintar-1)*4, 4, dest);
       snprintf(temp_dia, 4, "%i",dia_a_pintar);
       graphics_draw_text(ctx, temp_dia, fonts_get_system_font(FUENTE), GRect(0, 20+(x*22), 23, 7), GTextOverflowModeTrailingEllipsis, GTextAlignmentCenter, NULL);
-      }  
-  
-  // Los horarios en las celdas
-      graphics_context_set_fill_color(ctx, GColorWhite );
-      for (int x=0; x<7; x++)
-      {
-      graphics_fill_rect(ctx,GRect(25, 24+(x*22), 138, 11),0,GCornerNone );
-      graphics_draw_text(ctx, "10:00-15:00", fonts_get_system_font(FUENTE), GRect(24, 20+(x*22), 90, 7), GTextOverflowModeFill , GTextAlignmentLeft, NULL);
-      graphics_draw_text(ctx, "21:00-00:30", fonts_get_system_font(FUENTE), GRect(85, 20+(x*22), 100, 7), GTextOverflowModeFill , GTextAlignmentLeft, NULL);
+      // Ahora, se pintan los horarios de todos los días
+      // El string hace referencia al código de horario, y la X, a la posición respecto a la fila
+      pinta_horario(ctx, dest, x);
+  }  
 
-        //graphics_draw_text(ctx, "21:00-00:30", fonts_get_system_font(FUENTE), GRect(13, 20+(x*22), 143, 7), GTextOverflowModeTrailingEllipsis, GTextAlignmentCenter, NULL);
-
-      }  
-  
-  // Y los cuadros en los horarios
-      graphics_context_set_fill_color(ctx, GColorBlack );
-      // El 0 equivale a las 10:00, 1 = 10:15, 2 = 10:30, 3 = 10:45, 4 = 11:00, 5 = 11:15, 6 = 11:30
-      // 7 = 11:45, 8 = 12:00, 9 = 12:15, 10 = 12:30, 11 = 12:45, 12 = 13:00
-    
-  // Formula es 4*(hora-10). Por lo tanto, las 12 = 4*(12-10) = 4*2 = 8. La posicion 8 son las 12.
-  // Por ello, para pintar hasta las 12, el valor final de x en el for debe ser 12.
-  // PINTO CON EL MÉTODO NUEVO
-
-      for (int y=0; y<7; y++)
-      {
-        char temp_horario1[12];
-        char temp_horario2[12];
-
-        struct Horario valor_devuelto;
-        int valor_inicial, valor_final;
-        
-        graphics_context_set_fill_color(ctx, GColorBlack );
-
-        // Primera tanda
-        valor_devuelto = devuelve_horario("0>Lj");
-        valor_inicial = (4*(valor_devuelto.hora_inicio-10)) + (valor_devuelto.minuto_inicio/15);
-        valor_final = (4*(((valor_devuelto.hora_fin <2) ? 24+valor_devuelto.hora_fin : valor_devuelto.hora_fin) -10)) + (valor_devuelto.minuto_fin/15);
-        
-        for (int x=valor_inicial;x<valor_final;x++)
-          graphics_fill_rect(ctx,GRect(25+(x*2), 14+(22*y), 2, 9),0,GCornerNone );
-
-        snprintf(temp_horario1, 12, "%02d:%02d-%02d:%02d",valor_devuelto.hora_inicio, valor_devuelto.minuto_inicio, valor_devuelto.hora_fin, valor_devuelto.minuto_fin);
-        
-        // Segunda tanda
-        valor_inicial = (4*(valor_devuelto.hora2_inicio-10)) + (valor_devuelto.minuto2_inicio/15);
-        valor_final = (4*(((valor_devuelto.hora2_fin <2) ? 24+valor_devuelto.hora2_fin : valor_devuelto.hora2_fin) -10)) + (valor_devuelto.minuto2_fin/15);
-        
-        for (int x=valor_inicial;x<valor_final;x++)
-          graphics_fill_rect(ctx,GRect(25+(x*2), 14+(22*y), 2, 9),0,GCornerNone );
-
-        snprintf(temp_horario2, 12, "%02d:%02d-%02d:%02d",valor_devuelto.hora2_inicio, valor_devuelto.minuto2_inicio, valor_devuelto.hora2_fin, valor_devuelto.minuto2_fin);
-      
-        
-        graphics_context_set_fill_color(ctx, GColorWhite );
-        graphics_fill_rect(ctx,GRect(25, 24+(y*22), 138, 11),0,GCornerNone );
-        graphics_draw_text(ctx, temp_horario1, fonts_get_system_font(FUENTE), GRect(24, 20+(y*22), 90, 7), GTextOverflowModeFill , GTextAlignmentLeft, NULL);
-        graphics_draw_text(ctx, temp_horario2, fonts_get_system_font(FUENTE), GRect(85, 20+(y*22), 100, 7), GTextOverflowModeFill , GTextAlignmentLeft, NULL);
-
-      }
-  
-  
-  
   
       /*
       RANGO COMPLETO
@@ -602,12 +601,7 @@ void select_click_handler(ClickRecognizerRef recognizer, void *context) {
     persist_read_string(PERSIST_KEY_DATOS, datos, PERSIST_STRING_MAX_LENGTH);
 
     APP_LOG(APP_LOG_LEVEL_DEBUG, "%s",datos);
-    */
-  
-  
-  
-  char2horario("0>Ll");
-  
+    */  
   
   
   
