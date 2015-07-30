@@ -59,7 +59,7 @@ typedef unsigned char uint8;
 typedef unsigned short uint16;
 typedef unsigned int uint;
 
-int dia, mes, ano, mes_actual, dia_actual, chkturnos;
+int dia, mes, ano, mes_actual, dia_actual, chkturnos, num_dia, num_dia_actual;
 
 int turnos[20][33];
 
@@ -88,13 +88,7 @@ static const char *nombre_mes[13] =
 { "vacio", "enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre",
     "noviembre", "diciembre" };
 
-static const char *todos_los_horarios[62] =
-  { "10:00", "10:15", "10:30", "10:45", "11:00", "11:15", "11:30", "11:45", "12:00", "12:15", "12:30", "12:45", 
-    "13:00", "13:15", "13:30", "13:45", "14:00", "14:15", "14:30", "14:45", "15:00", "15:15", "15:30", "15:45", 
-    "16:00", "16:15", "16:30", "16:45", "17:00", "17:15", "17:30", "17:45", "18:00", "18:15", "18:30", "18:45", 
-    "19:00", "19:15", "19:30", "19:45", "20:00", "20:15", "20:30", "20:45", "20:00", "21:15", "21:30", "21:45", 
-    "22:00", "22:15", "22:30", "22:45", "23:00", "23:15", "23:30", "23:45", "00:00", "00:15", "00:30", "00:45", 
-    "01:00", "L" };
+
 
 // Para un horario como 10:00-13:30  17:00-01:00 sería algo así
 //                      0 14  28 60
@@ -200,7 +194,8 @@ struct Fecha devuelve_fecha(int ano, int dias)
 }
 
 
-char * hex2bin(char * hex) {
+char * hex2bin(char * hex)
+{
 	// your code goes here
     int resta;
     const char binary[16][5] = {"0000", "0001", "0010", "0011", "0100", "0101","0110", "0111", "1000", "1001", "1010", "1011", "1100", "1101", "1110","1111"};
@@ -219,19 +214,15 @@ char * hex2bin(char * hex) {
 	return bin;
 }
 
-void char2horario(char * cadena) {
-    char a;
-    int x=0;
-    int resta;
-    do {
-        a = cadena[x];
-        resta = a - 48;
-        APP_LOG(APP_LOG_LEVEL_DEBUG, "%c es %s", a, todos_los_horarios[resta]);
-        x++;
-    } while (cadena[x] != '\0');
-}
 
 struct Horario devuelve_horario(char * clave_horario) {
+  static const char *todos_los_horarios[62] =
+  { "10:00", "10:15", "10:30", "10:45", "11:00", "11:15", "11:30", "11:45", "12:00", "12:15", "12:30", "12:45", 
+    "13:00", "13:15", "13:30", "13:45", "14:00", "14:15", "14:30", "14:45", "15:00", "15:15", "15:30", "15:45", 
+    "16:00", "16:15", "16:30", "16:45", "17:00", "17:15", "17:30", "17:45", "18:00", "18:15", "18:30", "18:45", 
+    "19:00", "19:15", "19:30", "19:45", "20:00", "20:15", "20:30", "20:45", "20:00", "21:15", "21:30", "21:45", 
+    "22:00", "22:15", "22:30", "22:45", "23:00", "23:15", "23:30", "23:45", "00:00", "00:15", "00:30", "00:45", 
+    "01:00", "L" };
   struct Horario valor_devuelto;
   char dest[2];
   static char cadena[24];
@@ -387,7 +378,8 @@ void carga_datos()
 // Esta función se ejecutará cada vez que se refresque la CapaLineas
 void CapaLineas_update_callback(Layer *me, GContext* ctx)
 {
-
+  struct Fecha fecha_actual;
+  fecha_actual = devuelve_fecha(ano,num_dia); 
     // left, top, anchura, altura
     // 144x168
     
@@ -398,7 +390,7 @@ void CapaLineas_update_callback(Layer *me, GContext* ctx)
     graphics_context_set_text_color(ctx, COLOR_PRINCIPAL);  
 
     // Se pinta los carácteres fijos
-    if (chkturnos)
+    if (chkturnos==0)
     {  
       graphics_draw_text(ctx, "10", fonts_get_system_font(FUENTE), GRect(18, -2, 12, 7), GTextOverflowModeTrailingEllipsis, GTextAlignmentCenter, NULL);
       graphics_draw_text(ctx, "15", fonts_get_system_font(FUENTE), GRect(58, -2, 12, 7), GTextOverflowModeTrailingEllipsis, GTextAlignmentCenter, NULL);
@@ -408,7 +400,7 @@ void CapaLineas_update_callback(Layer *me, GContext* ctx)
     else
     {
       char temp_fecha[30];
-      snprintf(temp_fecha, 30, "%s de %d",nombre_mes[mes],ano);
+      snprintf(temp_fecha, 30, "%s de %d",nombre_mes[fecha_actual.mes],fecha_actual.ano);
       graphics_draw_text(ctx, temp_fecha, fonts_get_system_font(FUENTE), GRect(1, -3, 140, 7), GTextOverflowModeTrailingEllipsis, GTextAlignmentCenter, NULL);
     }
     graphics_draw_text(ctx, "Lun", fonts_get_system_font(FUENTE), GRect(0, 10, 23, 7), GTextOverflowModeTrailingEllipsis, GTextAlignmentCenter, NULL);
@@ -469,19 +461,31 @@ void CapaLineas_update_callback(Layer *me, GContext* ctx)
   
   // Los días de la semana
   // mes, ano, dia_actual
-  int dia_semana = dweek(ano,mes,dia);
-  int lunes = dia-(dia_semana-1);
+
+  int dia_semana = dweek(fecha_actual.ano,fecha_actual.mes,fecha_actual.dia);
+  int lunes = num_dia-(dia_semana-1);
   char * horario_test = "0>Ne1>Lj8>Lj0>Lj5>Lj1>Lj0>Ed0>Lj2>Lj0>Lj0>Lj7>Fj0>Lj0>Lj4>Lj0>Lj0>Hj2>Lj0>Lj0>Lj0>Lj0>Lj2>Mj1>Lj9>Lj0>Lj2>Oj4>Lj0>Lfmmmm0>Lj";
   char dest[5];
   // Ojo, falla al calcular los dias.
   for (int x=0; x<7; x++)
       {
-      int dia_a_pintar = lunes +x;
+      int dia_a_pintar;
+      if ((lunes +x) < 1)
+        dia_a_pintar = devuelve_fecha(ano-1,365 + yisleap(ano) + lunes +x).dia;
+      else if ((lunes+x)> 365 + yisleap(ano))
+        dia_a_pintar = devuelve_fecha(ano+1,1 +x).dia;
+      else
+        dia_a_pintar = devuelve_fecha(ano,lunes +x).dia;
+
       memset(dest, 0, 5);
-      if (dia_a_pintar > numero_de_dias(mes,ano)) 
-        dia_a_pintar = dia_a_pintar - numero_de_dias(mes,ano);
-      if (dia_a_pintar < 1)
-        dia_a_pintar = numero_de_dias(mes-1,ano) - dia_a_pintar;
+      /*
+      if (dia_a_pintar > numero_de_dias(fecha_actual.mes,fecha_actual.ano)) 
+        dia_a_pintar = dia_a_pintar - numero_de_dias(fecha_actual.mes,fecha_actual.ano);
+      else if (dia_a_pintar < 1)
+        dia_a_pintar = numero_de_dias(fecha_actual.mes-1,fecha_actual.ano) - dia_a_pintar;
+      */
+    
+      // Ojo, aquí hay que añadir el mes y el año al cargar el horario.
       char temp_dia[4];
       subString (horario_test, (dia_a_pintar-1)*4, 4, dest);
       snprintf(temp_dia, 4, "%i",dia_a_pintar);
@@ -568,22 +572,17 @@ void CapaLineas_update_callback(Layer *me, GContext* ctx)
 
 // Se pulsa el botón arriba
 static void up_click_handler(ClickRecognizerRef recognizer, void *context) {
-    for (int x=0; x<7;x++)
+    num_dia = num_dia-7;
+    struct Fecha fecha_actual;
+    fecha_actual = devuelve_fecha(ano,num_dia); 
+    if (num_dia <1)
     {
-      dia = dia-1; 
-      if (dia < 1) 
-      {
-        mes = mes-1;
-        dia = numero_de_dias(mes,ano);
-      }
+      ano--;
+      num_dia = 365 + yisleap(ano) + num_dia;
     }
-    if (mes==0)
-    {
-        mes = 12;
-        ano--;
-    }
-    APP_LOG(APP_LOG_LEVEL_DEBUG, "%d/%d/%d. Dia del año: %d", dia, mes, ano, get_yday(mes, dia, ano));
-    APP_LOG(APP_LOG_LEVEL_DEBUG, "%s es %s", "FFFF", hex2bin("FFFF"));
+  
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "Para %d, la fecha es %d-%d-%d", num_dia, fecha_actual.dia, fecha_actual.mes, fecha_actual.ano);
+
     layer_mark_dirty(CapaLineas);
     // Se resta un mes al actual y si el mes es inferior a 1, se resta un año
 }
@@ -612,21 +611,12 @@ void select_click_handler(ClickRecognizerRef recognizer, void *context) {
 
 // Se pulsa el botón abajo
 void down_click_handler(ClickRecognizerRef recognizer, void *context) {
-    for (int x=0; x<7;x++)
+    num_dia = num_dia+7;
+    if (num_dia > 365 + yisleap(ano))
     {
-      dia = dia+1; 
-      if (dia > numero_de_dias(mes,ano)) 
-      {
-        dia = 1;
-        mes = mes+1;
-      }
+      ano++;
+      num_dia = num_dia - 365 + yisleap(ano);
     }
-    if (mes==13)
-    {
-        mes = 1;
-        ano++;
-    }
-    APP_LOG(APP_LOG_LEVEL_DEBUG, "%d/%d/%d. Dia del año: %d", dia, mes, ano, get_yday(mes, dia, ano));
 
     layer_mark_dirty(CapaLineas);
     // Se suma un mes al actual, y si supera el 12, se suma un año
@@ -650,9 +640,10 @@ void window_load(Window *window)
     mes = tick_time->tm_mon+1;
     mes_actual = mes;
     ano = tick_time->tm_year+1900;
-    
-    // Se establece chkturnos a 0 para mostrar el mes y el año. Si es 1, se muestran horas en la zona superior
-    chkturnos=0;
+    num_dia_actual = get_yday(mes,dia,ano);
+    num_dia = num_dia_actual;
+    // Se establece chkturnos a 1 para mostrar el mes y el año. Si es 0, se muestran horas en la zona superior
+    chkturnos=1;
     
     // Línea de DEBUG, por si acaso. Debe estar desactivada siempre que sea posible
     //APP_LOG(APP_LOG_LEVEL_DEBUG, "El primer dia del mes %i, del año %i es %i", mes, ano, dweek(ano,mes,dia));
@@ -682,7 +673,9 @@ void carga_calendario()
 
     window_set_click_config_provider(window, click_config_provider);
     
-    
+    #ifdef PBL_SDK_2
+      window_set_fullscreen(window, true);
+    #endif
     window_stack_push(window, true /* Animado */);
     window_set_background_color(window, COLOR_FONDO);
     Layer *window_layer = window_get_root_layer(window);
