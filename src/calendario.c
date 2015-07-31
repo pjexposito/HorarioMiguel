@@ -216,13 +216,13 @@ char * hex2bin(char * hex)
 
 
 struct Horario devuelve_horario(char * clave_horario) {
-  static const char *todos_los_horarios[62] =
+  static const char *todos_los_horarios[64] =
   { "10:00", "10:15", "10:30", "10:45", "11:00", "11:15", "11:30", "11:45", "12:00", "12:15", "12:30", "12:45", 
     "13:00", "13:15", "13:30", "13:45", "14:00", "14:15", "14:30", "14:45", "15:00", "15:15", "15:30", "15:45", 
     "16:00", "16:15", "16:30", "16:45", "17:00", "17:15", "17:30", "17:45", "18:00", "18:15", "18:30", "18:45", 
-    "19:00", "19:15", "19:30", "19:45", "20:00", "20:15", "20:30", "20:45", "20:00", "21:15", "21:30", "21:45", 
+    "19:00", "19:15", "19:30", "19:45", "20:00", "20:15", "20:30", "20:45", "21:00", "21:15", "21:30", "21:45", 
     "22:00", "22:15", "22:30", "22:45", "23:00", "23:15", "23:30", "23:45", "00:00", "00:15", "00:30", "00:45", 
-    "01:00", "L" };
+    "01:00", "L", "99:99", "21:00" /*Vacio*/};
   struct Horario valor_devuelto;
   char dest[2];
   static char cadena[24];
@@ -284,7 +284,6 @@ void pinta_horario(GContext* ctx, char * codigo_horario, int y)
             graphics_context_set_fill_color(ctx, GColorWhite );
             graphics_fill_rect(ctx,GRect(25, 24+(y*22), 138, 11),0,GCornerNone );
             graphics_draw_text(ctx, "      LIBRE", fonts_get_system_font(FUENTE), GRect(24, 20+(y*22), 90, 7), GTextOverflowModeFill , GTextAlignmentLeft, NULL);
-
         }
         else
         {  
@@ -295,19 +294,31 @@ void pinta_horario(GContext* ctx, char * codigo_horario, int y)
         
           for (int x=valor_inicial;x<valor_final;x++)
             graphics_fill_rect(ctx,GRect(25+(x*2), 14+(22*y), 2, 9),0,GCornerNone );
+          if (valor_devuelto.hora_inicio != 99)
+            snprintf(temp_horario1, 12, "%02d:%02d-%02d:%02d",valor_devuelto.hora_inicio, valor_devuelto.minuto_inicio, valor_devuelto.hora_fin, valor_devuelto.minuto_fin);
+          else
+            snprintf(temp_horario1, 12, " ");
 
-          snprintf(temp_horario1, 12, "%02d:%02d-%02d:%02d",valor_devuelto.hora_inicio, valor_devuelto.minuto_inicio, valor_devuelto.hora_fin, valor_devuelto.minuto_fin);
-        
         // Segunda tanda
-          valor_inicial = (4*(valor_devuelto.hora2_inicio-10)) + (valor_devuelto.minuto2_inicio/15);
-          valor_final = (4*(((valor_devuelto.hora2_fin <2) ? 24+valor_devuelto.hora2_fin : valor_devuelto.hora2_fin) -10)) + (valor_devuelto.minuto2_fin/15);
+          if (valor_devuelto.hora2_inicio!=99)
+            {
+            valor_inicial = (4*(valor_devuelto.hora2_inicio-10)) + (valor_devuelto.minuto2_inicio/15);
+            valor_final = (4*(((valor_devuelto.hora2_fin <2) ? 24+valor_devuelto.hora2_fin : valor_devuelto.hora2_fin) -10)) + (valor_devuelto.minuto2_fin/15);
         
-          for (int x=valor_inicial;x<valor_final;x++)
-            graphics_fill_rect(ctx,GRect(25+(x*2), 14+(22*y), 2, 9),0,GCornerNone );
+            for (int x=valor_inicial;x<valor_final;x++)
+              graphics_fill_rect(ctx,GRect(25+(x*2), 14+(22*y), 2, 9),0,GCornerNone );
+          if (valor_devuelto.hora2_inicio != 99)
+            snprintf(temp_horario2, 12, "%02d:%02d-%02d:%02d",valor_devuelto.hora2_inicio, valor_devuelto.minuto2_inicio, valor_devuelto.hora2_fin, valor_devuelto.minuto2_fin);
+          else
+            snprintf(temp_horario2, 12, " ");
+            
+            }
+          else
+            {
+            
+            snprintf(temp_horario2, 12, " ");
 
-          snprintf(temp_horario2, 12, "%02d:%02d-%02d:%02d",valor_devuelto.hora2_inicio, valor_devuelto.minuto2_inicio, valor_devuelto.hora2_fin, valor_devuelto.minuto2_fin);
-      
-        
+            }
           graphics_context_set_fill_color(ctx, GColorWhite );
           graphics_fill_rect(ctx,GRect(25, 24+(y*22), 138, 11),0,GCornerNone );
           graphics_draw_text(ctx, temp_horario1, fonts_get_system_font(FUENTE), GRect(24, 20+(y*22), 90, 7), GTextOverflowModeFill , GTextAlignmentLeft, NULL);
@@ -464,7 +475,8 @@ void CapaLineas_update_callback(Layer *me, GContext* ctx)
 
   int dia_semana = dweek(fecha_actual.ano,fecha_actual.mes,fecha_actual.dia);
   int lunes = num_dia-(dia_semana-1);
-  char * horario_test = "0>Ne1>Lj8>Lj0>Lj5>Lj1>Lj0>Ed0>Lj2>Lj0>Lj0>Lj7>Fj0>Lj0>Lj4>Lj0>Lj0>Hj2>Lj0>Lj0>Lj0>Lj0>Lj2>Mj1>Lj9>Lj0>Lj2>Oj4>Lj0>Lfmmmm0>Lj";
+  //char * horario_test = "0>Ne1>Lj8>Lj0>Lj5>Lj1>Lj0>Ed0>Lj2>Lj0>Lj0>Lj7>Fj0>Lj0>Lj4>Lj0>Lj0>Hj2>Lj0>Lj0>Lj0>Lj0>Lj2>Mj1>Lj9>Lj0>Lj2>Oj4>Lj0>Lfmmmm0>nn";
+char * horario_test = "0DojnnD`nnLd0LojmmmmmmmmnnLl0DojnnD`nnLd0LojmmmmmmmmnnLl0DojnnD`nnLd0LojmmmmmmmmnnLl0DojnnD`nnLd0LojmmmmmmmmnnLl0DojnnD`nnLd";
   char dest[5];
   // Ojo, falla al calcular los dias.
   for (int x=0; x<7; x++)
@@ -492,7 +504,9 @@ void CapaLineas_update_callback(Layer *me, GContext* ctx)
       graphics_draw_text(ctx, temp_dia, fonts_get_system_font(FUENTE), GRect(0, 20+(x*22), 23, 7), GTextOverflowModeTrailingEllipsis, GTextAlignmentCenter, NULL);
       // Ahora, se pintan los horarios de todos los días
       // El string hace referencia al código de horario, y la X, a la posición respecto a la fila
-      pinta_horario(ctx, dest, x);
+          APP_LOG(APP_LOG_LEVEL_DEBUG, "Para %s", dest);
+
+    pinta_horario(ctx, dest, x);
   }  
 
   
