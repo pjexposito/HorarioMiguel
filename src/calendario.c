@@ -539,7 +539,7 @@ void CapaLineas_update_callback(Layer *me, GContext* ctx)
       else if (mes_a_pintar==mes_actual-3)
         subString (horario1, (dia_a_pintar-1)*4, 4, dest);
       else
-        subString (horario4, (dia_a_pintar-1)*4, 4, dest);
+        subString ("nnnn", 0, 4, dest);
 
       snprintf(temp_dia, 4, "%i",dia_a_pintar);
       graphics_draw_text(ctx, temp_dia, fonts_get_system_font(FUENTE), GRect(0, 20+(x*22), 23, 7), GTextOverflowModeTrailingEllipsis, GTextAlignmentCenter, NULL);
