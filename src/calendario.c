@@ -223,6 +223,11 @@ struct Horario devuelve_horario(char * clave_horario) {
     "19:00", "19:15", "19:30", "19:45", "20:00", "20:15", "20:30", "20:45", "21:00", "21:15", "21:30", "21:45", 
     "22:00", "22:15", "22:30", "22:45", "23:00", "23:15", "23:30", "23:45", "00:00", "00:15", "00:30", "00:45", 
     "01:00", "L", "99:99", "21:00" /*Vacio*/};
+  
+  // OJO. AQUI HAY UN HACK MUY BRUTO QUE HE TENIDO QUE HACER
+  // Esta tabla se transforma en char. Resulta que el valor equivalente a las 21:00 + 48 de la rectificación es
+  // el símbolo '\', que no se puede incluir sólo en un string. Por eso, el valor 21:00 se pasa al final y ahora
+  // equivale a 'o'. Es cutre pero funciona.
   struct Horario valor_devuelto;
   char dest[2];
   static char cadena[24];
