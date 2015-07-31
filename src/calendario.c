@@ -2,7 +2,11 @@
 #include "calendario.h"
 #include "funciones.h"
 
-#define PERSIST_KEY_DATOS 10
+#define PERSIST_KEY_DATOS1 10
+#define PERSIST_KEY_DATOS2 11
+#define PERSIST_KEY_DATOS3 12
+#define PERSIST_KEY_DATOS4 13
+#define PERSIST_KEY_DATOS5 14
 
 
   
@@ -63,7 +67,7 @@ int dia, mes, ano, mes_actual, dia_actual, chkturnos, num_dia, num_dia_actual;
 
 int turnos[20][33];
 
-
+char horario1[125], horario2[125], horario3[125], horario4[125], horario5[125];
 int cargando=0;
 
 struct Fecha{
@@ -368,6 +372,14 @@ void carga_datos()
 {
     
     char username[64];
+  
+    persist_read_string(PERSIST_KEY_DATOS1, horario1, 125);
+    persist_read_string(PERSIST_KEY_DATOS2, horario2, 125);
+    persist_read_string(PERSIST_KEY_DATOS3, horario3, 125);
+    persist_read_string(PERSIST_KEY_DATOS4, horario4, 125);
+    persist_read_string(PERSIST_KEY_DATOS5, horario5, 125);
+
+
     persist_read_string(0, username, sizeof(username));
     if (strcmp(username, "")==0)
     {
@@ -481,19 +493,31 @@ void CapaLineas_update_callback(Layer *me, GContext* ctx)
   int dia_semana = dweek(fecha_actual.ano,fecha_actual.mes,fecha_actual.dia);
   int lunes = num_dia-(dia_semana-1);
   //char * horario_test = "0>Ne1>Lj8>Lj0>Lj5>Lj1>Lj0>Ed0>Lj2>Lj0>Lj0>Lj7>Fj0>Lj0>Lj4>Lj0>Lj0>Hj2>Lj0>Lj0>Lj0>Lj0>Lj2>Mj1>Lj9>Lj0>Lj2>Oj4>Lj0>Lfmmmm0>nn";
-char * horario_test = "0DojnnD`nnLd0LojmmmmmmmmnnLl0DojnnD`nnLd0LojmmmmmmmmnnLl0DojnnD`nnLd0LojmmmmmmmmnnLl0DojnnD`nnLd0LojmmmmmmmmnnLl0DojnnD`nnLd";
+
+
+
   char dest[5];
   // Ojo, falla al calcular los dias.
   for (int x=0; x<7; x++)
       {
       int dia_a_pintar;
-      if ((lunes +x) < 1)
-        dia_a_pintar = devuelve_fecha(ano-1,365 + yisleap(ano) + lunes +x).dia;
-      else if ((lunes+x)> 365 + yisleap(ano))
-        dia_a_pintar = devuelve_fecha(ano+1,1 +x).dia;
-      else
-        dia_a_pintar = devuelve_fecha(ano,lunes +x).dia;
+      int mes_a_pintar;
 
+      if ((lunes +x) < 1)
+      {
+        dia_a_pintar = devuelve_fecha(ano-1,365 + yisleap(ano) + lunes +x).dia;
+        mes_a_pintar = devuelve_fecha(ano-1,365 + yisleap(ano) + lunes +x).mes;
+      }
+      else if ((lunes+x)> 365 + yisleap(ano))
+      {
+        dia_a_pintar = devuelve_fecha(ano+1,1 +x).dia;
+        mes_a_pintar = devuelve_fecha(ano+1,1 +x).mes;
+      }
+      else
+      {
+        dia_a_pintar = devuelve_fecha(ano,lunes +x).dia;
+        mes_a_pintar = devuelve_fecha(ano,lunes +x).mes;
+      }
       memset(dest, 0, 5);
       /*
       if (dia_a_pintar > numero_de_dias(fecha_actual.mes,fecha_actual.ano)) 
@@ -504,7 +528,19 @@ char * horario_test = "0DojnnD`nnLd0LojmmmmmmmmnnLl0DojnnD`nnLd0LojmmmmmmmmnnLl0
     
       // Ojo, aquí hay que añadir el mes y el año al cargar el horario.
       char temp_dia[4];
-      subString (horario_test, (dia_a_pintar-1)*4, 4, dest);
+      if (mes_a_pintar==mes_actual)
+        subString (horario4, (dia_a_pintar-1)*4, 4, dest);
+      else if (mes_a_pintar==mes_actual+1)
+        subString (horario5, (dia_a_pintar-1)*4, 4, dest);
+      else if (mes_a_pintar==mes_actual-1)
+        subString (horario3, (dia_a_pintar-1)*4, 4, dest);
+      else if (mes_a_pintar==mes_actual-2)
+        subString (horario2, (dia_a_pintar-1)*4, 4, dest);
+      else if (mes_a_pintar==mes_actual-3)
+        subString (horario1, (dia_a_pintar-1)*4, 4, dest);
+      else
+        subString (horario4, (dia_a_pintar-1)*4, 4, dest);
+
       snprintf(temp_dia, 4, "%i",dia_a_pintar);
       graphics_draw_text(ctx, temp_dia, fonts_get_system_font(FUENTE), GRect(0, 20+(x*22), 23, 7), GTextOverflowModeTrailingEllipsis, GTextAlignmentCenter, NULL);
       // Ahora, se pintan los horarios de todos los días
@@ -621,8 +657,10 @@ void select_click_handler(ClickRecognizerRef recognizer, void *context) {
     APP_LOG(APP_LOG_LEVEL_DEBUG, "%s",datos);
     */  
   
-  
-  
+    struct Fecha fecha_actual;
+  fecha_actual = devuelve_fecha(ano,num_dia); 
+      APP_LOG(APP_LOG_LEVEL_DEBUG, "%d es %d",fecha_actual.mes,mes);
+
   
   
     // Se usa el select para cambiar entre calendario normal y de turnos
@@ -706,7 +744,13 @@ void carga_calendario()
     layer_set_update_proc(CapaLineas, CapaLineas_update_callback); 
     layer_add_child(window_layer, CapaLineas); 
     
-    //persist_write_string(PERSIST_KEY_DATOS,"5A0E0F0LPA0E0F0LPA0E0F0LPA0E0F0LPA0E0F0LPA0E0F0LPA0E0F0LPA0E0F0LPA0E0F0LPA0E0F0LPA0E0F0LPA0E0F0LPA0E0F0LPA0E0F0LPA0E0F0LPA0E0F0LPA0E0F0LPA0E0F0LPA0E0F0LPA0E0F0LPA0E0F0LPA0E0F0LPA0E0F0LPA0E0F0LPA0E0F0LPA0E0F0LPA0E0F0LPA0E0F0LPA0E0F0LPA0E0F0LPA0E0F0LPA0E0F0");
+    persist_write_string(PERSIST_KEY_DATOS1,"nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn");
+    persist_write_string(PERSIST_KEY_DATOS2,"nnnnnnnnnnLlnnLlnnD`nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn");
+    persist_write_string(PERSIST_KEY_DATOS3,"nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn");
+    persist_write_string(PERSIST_KEY_DATOS4,"0DojnnD`nnLd0Loj0LojmmmmnnD`nnLd0Lojmmmm0LojnnLlnnD`nnLd0Loj0DHjmmmmnnLl0DojnnD`nnLd0LojnnD`mmmmnnD`nnLd0LojmmmmnnLlnnLlnnD`");
+    persist_write_string(PERSIST_KEY_DATOS5,"nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn");
+
+
 }
 
 
