@@ -2,11 +2,11 @@
 #include "calendario.h"
 #include "funciones.h"
 
-#define PERSIST_KEY_DATOS1 10
-#define PERSIST_KEY_DATOS2 11
-#define PERSIST_KEY_DATOS3 12
-#define PERSIST_KEY_DATOS4 13
-#define PERSIST_KEY_DATOS5 14
+#define PERSIST_KEY_DATOS1 0
+#define PERSIST_KEY_DATOS2 1
+#define PERSIST_KEY_DATOS3 2
+#define PERSIST_KEY_DATOS4 3
+#define PERSIST_KEY_DATOS5 4
 
 
   

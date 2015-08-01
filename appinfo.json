@@ -1,5 +1,11 @@
 {
-    "appKeys": {},
+    "appKeys": {
+        "CADENA1": 0,
+        "CADENA2": 0,
+        "CADENA3": 0,
+        "CADENA4": 0,
+        "CADENA5": 0
+    },
     "capabilities": [
         ""
     ],
@@ -42,7 +48,7 @@
         "aplite",
         "basalt"
     ],
-    "uuid": "0af77e7c-853a-474c-a076-b96e883987f0",
+    "uuid": "1e0dd4b8-d228-43a0-9e18-3c4db3db419e",
     "versionLabel": "1.0",
     "watchapp": {
         "watchface": false

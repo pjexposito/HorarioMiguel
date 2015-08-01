@@ -16,8 +16,8 @@ static MenuLayer *menu_layer;
 void process_tuple(Tuple *t)
 {
     int key = t->key;
-    char string_value[64];
-    memset(string_value, 0, 64);
+    char string_value[200];
+    memset(string_value, 0, 200);
     strcpy(string_value, t->value->cstring);
     persist_write_string(key, string_value);
 }
