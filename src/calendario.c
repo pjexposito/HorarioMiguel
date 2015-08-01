@@ -2,11 +2,11 @@
 #include "calendario.h"
 #include "funciones.h"
 
-#define PERSIST_KEY_DATOS1 0
-#define PERSIST_KEY_DATOS2 1
-#define PERSIST_KEY_DATOS3 2
-#define PERSIST_KEY_DATOS4 3
-#define PERSIST_KEY_DATOS5 4
+#define CLAVE1 0
+#define CLAVE2 1
+#define CLAVE3 2
+#define CLAVE4 3
+#define CLAVE5 4
 
 
   
@@ -67,8 +67,10 @@ int dia, mes, ano, mes_actual, dia_actual, chkturnos, num_dia, num_dia_actual;
 
 int turnos[20][33];
 
-char horario1[125], horario2[125], horario3[125], horario4[125], horario5[125];
+char horario_actual[125], horario_mas1[125], horario_menos1[125], horario_menos2[125], horario_menos3[125];
 int cargando=0;
+
+char matriz_horarios[12][125];
 
 struct Fecha{
     int dia;
@@ -373,11 +375,12 @@ void carga_datos()
     
     char username[64];
   
-    persist_read_string(PERSIST_KEY_DATOS1, horario1, 125);
-    persist_read_string(PERSIST_KEY_DATOS2, horario2, 125);
-    persist_read_string(PERSIST_KEY_DATOS3, horario3, 125);
-    persist_read_string(PERSIST_KEY_DATOS4, horario4, 125);
-    persist_read_string(PERSIST_KEY_DATOS5, horario5, 125);
+    persist_read_string(CLAVE1, matriz_horarios[0], 125);
+    persist_read_string(CLAVE2, matriz_horarios[1], 125);
+    persist_read_string(CLAVE3, matriz_horarios[2], 125);
+    persist_read_string(CLAVE4, matriz_horarios[3], 125);
+    persist_read_string(CLAVE5, matriz_horarios[4], 125);
+
 
 
     persist_read_string(0, username, sizeof(username));
@@ -527,19 +530,23 @@ void CapaLineas_update_callback(Layer *me, GContext* ctx)
       */
     
       // Ojo, aquí hay que añadir el mes y el año al cargar el horario.
+      
       char temp_dia[4];
-      if (mes_a_pintar==mes_actual)
-        subString (horario4, (dia_a_pintar-1)*4, 4, dest);
-      else if (mes_a_pintar==mes_actual+1)
-        subString (horario5, (dia_a_pintar-1)*4, 4, dest);
+    
+      
+        subString (matriz_horarios[mes_a_pintar], (dia_a_pintar-1)*4, 4, dest);
+     
+     /*else if (mes_a_pintar==mes_actual+1)
+        subString (matriz_horarios[4], (dia_a_pintar-1)*4, 4, dest);
       else if (mes_a_pintar==mes_actual-1)
-        subString (horario3, (dia_a_pintar-1)*4, 4, dest);
+        subString (matriz_horarios[2], (dia_a_pintar-1)*4, 4, dest);
       else if (mes_a_pintar==mes_actual-2)
-        subString (horario2, (dia_a_pintar-1)*4, 4, dest);
+        subString (matriz_horarios[1], (dia_a_pintar-1)*4, 4, dest);
       else if (mes_a_pintar==mes_actual-3)
-        subString (horario1, (dia_a_pintar-1)*4, 4, dest);
+        subString (matriz_horarios[0], (dia_a_pintar-1)*4, 4, dest);
       else
         subString ("nnnn", 0, 4, dest);
+        */
 
       snprintf(temp_dia, 4, "%i",dia_a_pintar);
       graphics_draw_text(ctx, temp_dia, fonts_get_system_font(FUENTE), GRect(0, 20+(x*22), 23, 7), GTextOverflowModeTrailingEllipsis, GTextAlignmentCenter, NULL);
@@ -743,13 +750,13 @@ void carga_calendario()
     CapaLineas = layer_create(bounds);
     layer_set_update_proc(CapaLineas, CapaLineas_update_callback); 
     layer_add_child(window_layer, CapaLineas); 
-    
-    persist_write_string(PERSIST_KEY_DATOS1,"nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn");
-    persist_write_string(PERSIST_KEY_DATOS2,"nnnnnnnnnnLlnnLlnnD`nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn");
-    persist_write_string(PERSIST_KEY_DATOS3,"nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn");
-    persist_write_string(PERSIST_KEY_DATOS4,"0DojnnD`nnLd0Loj0LojmmmmnnD`nnLd0Lojmmmm0LojnnLlnnD`nnLd0Loj0DHjmmmmnnLl0DojnnD`nnLd0LojnnD`mmmmnnD`nnLd0LojmmmmnnLlnnLlnnD`");
-    persist_write_string(PERSIST_KEY_DATOS5,"nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn");
-
+    /*
+    persist_write_string(CLAVE1,"nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn");
+    persist_write_string(CLAVE2,"nnnnnnnnnnLlnnLlnnD`nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn");
+    persist_write_string(CLAVE3,"nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn");
+    persist_write_string(CLAVE4,"0DojnnD`nnLd0Loj0LojmmmmnnD`nnLd0Lojmmmm0LojnnLlnnD`nnLd0Loj0DHjmmmmnnLl0DojnnD`nnLd0LojnnD`mmmmnnD`nnLd0LojmmmmnnLlnnLlnnD`");
+    persist_write_string(CLAVE5,"nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn");
+*/
 
 }
 

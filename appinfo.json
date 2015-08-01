@@ -1,10 +1,10 @@
 {
     "appKeys": {
-        "CADENA1": 0,
-        "CADENA2": 0,
-        "CADENA3": 0,
-        "CADENA4": 0,
-        "CADENA5": 0
+        "clave1": 1,
+        "clave2": 2,
+        "clave3": 3,
+        "clave4": 4,
+        "clave5": 5
     },
     "capabilities": [
         ""

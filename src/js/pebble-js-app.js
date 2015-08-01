@@ -30,6 +30,7 @@ function transforma_horario(horario)
 
 function procesa_csv(url) 
 	{
+    var datos_dic=[];
 		var total_lineas = 0;
         var array_final = "";
         console.log("Voy a procesar "+url);
@@ -78,9 +79,29 @@ function procesa_csv(url)
         }
         // AQUI SE AÑADE AL DICCIONARIO QUE SE MANDARÁ AL PEBBLE
         console.log("Array creada para mes "+l+": "+array_final);
+        datos_dic[l-1] = array_final;
       }
-  var dict = {"0" : "data04"};
-	
+      //var dict = {"0" : datos_dic[0], "1": datos_dic[1], "2": datos_dic[2]};
+//var dict2 = {"0" : datos_dic[0]};
+	var data0 = datos_dic[0];
+	var data1 = datos_dic[1];
+	var data2 = datos_dic[2];
+	var data3 = datos_dic[3];
+	var data4 = datos_dic[4];
+	var data5 = datos_dic[5];
+	var data6 = datos_dic[6];
+	var data7 = datos_dic[7];
+	var data8 = datos_dic[8];
+	var data9 = datos_dic[9];
+	var data10 = datos_dic[10];
+	var data11 = datos_dic[11];
+  var data12 = datos_dic[0];
+  var data13 = datos_dic[0];
+  var data14 =datos_dic[0];
+  
+  var dict = {"0" : data0, "1": data1, "2": data2, "3": data3, "4": data4, "5": data5, "6": data6, "7": data7, "8": data8, "9": data9, "10": data10, "11": data11, "12": data12, "13": data13, "14": data14};
+
+    
 	Pebble.sendAppMessage(dict);
 	}
 
@@ -90,18 +111,18 @@ var ObtenDatos = function() {
   //console.log(response);
 
 	var json = JSON.parse(response);
-	var data0 = json.main.data0;
-	var data1 = json.main.data1;
-  var data2 = json.main.data2;
-  var data3 = json.main.data3;
-  var data4 = json.main.data4;
-	var data5 = json.main.data5;
-	var data6 = json.main.data6;
-  var data7 = json.main.data7;
-  var data8 = json.main.data8;
-  var data9 = json.main.data9;	
-  var data10 = json.main.data10;
-	var data11 = json.main.data11;
+	var data0 = "1nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn";
+	var data1 = "2nnnnnnnnnLlnnLlnnD`nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn";
+  var data2 = "3DojnnD`nnLd0Loj0LojmmmmnnD`nnLd0Lojmmmm0LojnnLlnnD`nnLd0Loj0DHjmmmmnnLl0DojnnD`nnLd0LojnnD`mmmmnnD`nnLd0LojmmmmnnLlnnLlnnD`";
+  var data3 = "4nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn";
+  var data4 = "5DojnnD`nnLd0Loj0LojmmmmnnD`nnLd0Lojmmmm0LojnnLlnnD`nnLd0Loj0DHjmmmmnnLl0DojnnD`nnLd0LojnnD`mmmmnnD`nnLd0LojmmmmnnLlnnLlnnD`";
+  var data5 = "6DojnnD`nnLd0Loj0LojmmmmnnD`nnLd0Lojmmmm0LojnnLlnnD`nnLd0Loj0DHjmmmmnnLl0DojnnD`nnLd0LojnnD`mmmmnnD`nnLd0LojmmmmnnLlnnLlnnD`";
+  var data6 = "7DojnnD`nnLd0Loj0LojmmmmnnD`nnLd0Lojmmmm0LojnnLlnnD`nnLd0Loj0DHjmmmmnnLl0DojnnD`nnLd0LojnnD`mmmmnnD`nnLd0LojmmmmnnLlnnLlnnD`";
+  var data7 = "8DojnnD`nnLd0Loj0LojmmmmnnD`nnLd0Lojmmmm0LojnnLlnnD`nnLd0Loj0DHjmmmmnnLl0DojnnD`nnLd0LojnnD`mmmmnnD`nnLd0LojmmmmnnLlnnLlnnD`";
+  var data8 = "9DojnnD`nnLd0Loj0LojmmmmnnD`nnLd0Lojmmmm0LojnnLlnnD`nnLd0Loj0DHjmmmmnnLl0DojnnD`nnLd0LojnnD`mmmmnnD`nnLd0LojmmmmnnLlnnLlnnD`";
+  var data9 = "1DojnnD`nnLd0Loj0LojmmmmnnD`nnLd0Lojmmmm0LojnnLlnnD`nnLd0Loj0DHjmmmmnnLl0DojnnD`nnLd0LojnnD`mmmmnnD`nnLd0LojmmmmnnLlnnLlnnD`";
+  var data10 = "2DojnnD`nnLd0Loj0LojmmmmnnD`nnLd0Lojmmmm0LojnnLlnnD`nnLd0Loj0DHjmmmmnnLl0DojnnD`nnLd0LojnnD`mmmmnnD`nnLd0LojmmmmnnLlnnLlnnD`";
+  var data11 = "3DojnnD`nnLd0Loj0LojmmmmnnD`nnLd0Lojmmmm0LojnnLlnnD`nnLd0Loj0DHjmmmmnnLl0DojnnD`nnLd0LojnnD`mmmmnnD`nnLd0LojmmmmnnLlnnLlnnD`";
   var data12 = json.main.data12;
   var data13 = json.main.data13;
   var data14 = json.main.data14;
@@ -119,6 +140,7 @@ Pebble.addEventListener("ready",
 Pebble.addEventListener("appmessage",
   function(e) {
   console.log("Voy a procesar");
+    //ObtenDatos();
   procesa_csv("https://dl.dropboxusercontent.com/u/119376/ejemplo.csv");
   }
 );

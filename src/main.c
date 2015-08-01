@@ -16,10 +16,12 @@ static MenuLayer *menu_layer;
 void process_tuple(Tuple *t)
 {
     int key = t->key;
-    char string_value[200];
-    memset(string_value, 0, 200);
+    char string_value[125];
+    memset(string_value, 0, 125);
     strcpy(string_value, t->value->cstring);
     persist_write_string(key, string_value);
+      APP_LOG(APP_LOG_LEVEL_DEBUG, "Escrita clave %d, con valor %s", key, string_value);
+
 }
 
 
@@ -44,6 +46,9 @@ void in_received_handler(DictionaryIterator *iter, void *context)
     loading = 0;
     layer_mark_dirty(menu_layer_get_layer(menu_layer));
 }
+
+
+
 
 void send_int(int key, int cmd)
 {
