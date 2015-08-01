@@ -32,7 +32,9 @@ function procesa_csv(url)
 	{
 		var total_lineas = 0;
         var array_final = "";
+        console.log("Voy a procesar "+url);
         var response = HTTPGET(url);
+    console.log("Tengo respuesta");
         var lineas = response.split('\n');
         var sumatorio_horario = new Array(10);
         for (var m = 0; m < 13; m++) {
@@ -52,8 +54,11 @@ function procesa_csv(url)
 				
         total_lineas++;
 				// Para sacar cada línea del archivo
-				var data = $.csv.toArray(response.split('\n')[i], {'separator':';'});
-				var str_temp = response.split('\n')[i+1];
+				var data = [];
+				var linea_separada = response.split('\n')[i];
+				data[0]=linea_separada.substring(0,linea_separada.indexOf(";"));
+				data[1]=linea_separada.substring(linea_separada.indexOf(";")+1,linea_separada.length);
+        var str_temp = response.split('\n')[i+1];
 				data[2] = str_temp.replace(";", '');
 				
 				// Para dividir la fecha entre partes y sacar los días de la semana
@@ -62,19 +67,21 @@ function procesa_csv(url)
 				i = i+2;
 				sumatorio_horario[fecha.getMonth()][fecha.getDate()] = transforma_horario(data[0])+transforma_horario(data[2]);
     }
-
+    
     for (var l = 1;l<13;l++)
         {
         array_final = "";
         for(var n = 1;n < 32;n++)
-			{
-			//console.log("Para "+i+"= "+sumatorio_horario[j][i]);
-			array_final = array_final+sumatorio_horario[l][n];
-			}
-      // AQUI SE AÑADE AL DICCIONARIO QUE SE MANDARÁ AL PEBBLE
-      //document.write("<p>Array creada para mes "+j+": "+array_final+"</p>");
+        {
+          //console.log("Para "+i+"= "+sumatorio_horario[j][i]);
+          array_final = array_final+sumatorio_horario[l][n];
         }
-		
+        // AQUI SE AÑADE AL DICCIONARIO QUE SE MANDARÁ AL PEBBLE
+        console.log("Array creada para mes "+l+": "+array_final);
+      }
+  var dict = {"0" : "data04"};
+	
+	Pebble.sendAppMessage(dict);
 	}
 
 
@@ -111,6 +118,7 @@ Pebble.addEventListener("ready",
 
 Pebble.addEventListener("appmessage",
   function(e) {
-	ObtenDatos();
+  console.log("Voy a procesar");
+  procesa_csv("https://dl.dropboxusercontent.com/u/119376/ejemplo.csv");
   }
 );
