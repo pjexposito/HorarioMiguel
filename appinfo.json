@@ -1,6 +1,8 @@
 {
     "appKeys": {
-        "clave1": 1
+        "error": 2,
+        "horario": 1,
+        "mes": 0
     },
     "capabilities": [
         ""

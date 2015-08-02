@@ -1,3 +1,8 @@
+var appMessageQueue = [];
+var maxAppMessageTries = 3;
+var appMessageRetryTimeout = 3000;
+var appMessageTimeout = 100;
+
 function HTTPGET(url) {
 	var req = new XMLHttpRequest();
 	req.open("GET", url, false);
@@ -27,6 +32,38 @@ function transforma_horario(horario)
     }
      return valor_retorno;
     }
+
+
+function sendAppMessage() {
+  var currentAppMessage;
+	if (appMessageQueue.length > 0) {
+		currentAppMessage = appMessageQueue[0];
+		currentAppMessage.numTries = currentAppMessage.numTries || 0;
+		currentAppMessage.transactionId = currentAppMessage.transactionId || -1;
+		if (currentAppMessage.numTries < maxAppMessageTries) {
+			console.log('Sending AppMessage to Pebble: ' + JSON.stringify(currentAppMessage.message));
+			Pebble.sendAppMessage(
+				currentAppMessage.message,
+				function(e) {
+					appMessageQueue.shift();
+					setTimeout(function() {
+						sendAppMessage();
+					}, appMessageTimeout);
+				}, function(e) {
+					console.log('Failed sending AppMessage for transactionId:' + e.data.transactionId + '. Error: ' + e.data.error.message);
+					appMessageQueue[0].transactionId = e.data.transactionId;
+					appMessageQueue[0].numTries++;
+					setTimeout(function() {
+						sendAppMessage();
+					}, appMessageRetryTimeout);
+				}
+			);
+		} else {
+			console.log('Failed sending AppMessage for transactionId:' + currentAppMessage.transactionId + '. Bailing. ' + JSON.stringify(currentAppMessage.message));
+		}
+	}
+}
+
 
 function procesa_csv(url) 
 	{
@@ -80,10 +117,15 @@ function procesa_csv(url)
         // AQUI SE AÑADE AL DICCIONARIO QUE SE MANDARÁ AL PEBBLE
         console.log("Array creada para mes "+l+": "+array_final);
         datos_dic[l-1] = array_final;
+        
+        appMessageQueue.push({'message': {'mes': l*2-2, 'horario': array_final.substring(0,50)}});
+        appMessageQueue.push({'message': {'mes': l*2-1, 'horario': array_final.substring(51,array_final.length)}});
+
       }
       //var dict = {"0" : datos_dic[0], "1": datos_dic[1], "2": datos_dic[2]};
 //var dict2 = {"0" : datos_dic[0]};
-	var data0 = datos_dic[0];
+	/*
+  var data0 = datos_dic[0];
 	var data1 = datos_dic[1];
 	var data2 = datos_dic[2];
 	var data3 = datos_dic[3];
@@ -98,15 +140,18 @@ function procesa_csv(url)
   var data12 = datos_dic[0];
   var data13 = datos_dic[0];
   var data14 =datos_dic[0];
-  
+  */
   //var dict = {"0" : data0};
 
     // Vale, ya se el bug. No se pueden enviar más de 124 bytes :(
     // Yo estaba mandando un dic de 124bytes * 14: Por eso petaba
     // pruebo a mandar menos datos
-      var dict = {"0" : "DojnnD`nnLd0Loj0LojmmmmnnD`nnLd0Lojmmmm0LojnnLlnnD`nnLd0Loj0DHjmmmmnnLl0DojnnD`nnLd0LojnnD`mmmmnnD"};
+      //var dict = {"0" : "DojnnD`nnLd0Loj0LojmmmmnnD`nnLd0Lojmmmm0LojnnLlnnD`nnLd0Loj0DHjmmmmnnLl0DojnnD`nnLd0LojnnD`mmmmnnD"};
 
-	Pebble.sendAppMessage(dict);
+	//Pebble.sendAppMessage(dict);
+    
+  sendAppMessage();
+
 	}
 
 
@@ -143,6 +188,8 @@ Pebble.addEventListener("ready",
 
 Pebble.addEventListener("appmessage",
   function(e) {
+  appMessageQueue = [];
+
   console.log("Voy a procesar");
     //ObtenDatos();
   procesa_csv("https://dl.dropboxusercontent.com/u/119376/ejemplo.csv");

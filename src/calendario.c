@@ -7,7 +7,13 @@
 #define CLAVE3 2
 #define CLAVE4 3
 #define CLAVE5 4
-
+#define CLAVE6 5
+#define CLAVE7 6
+#define CLAVE8 7
+#define CLAVE9 8
+#define CLAVE10 9
+#define CLAVE11 10
+#define CLAVE12 11
 
   
 #define MESES_TURNOS 20
@@ -71,6 +77,9 @@ char horario_actual[125], horario_mas1[125], horario_menos1[125], horario_menos2
 int cargando=0;
 
 char matriz_horarios[12][125];
+
+
+
 
 struct Fecha{
     int dia;
@@ -380,6 +389,22 @@ void carga_datos()
     persist_read_string(CLAVE3, matriz_horarios[2], sizeof(matriz_horarios[2]));
     persist_read_string(CLAVE4, matriz_horarios[3], sizeof(matriz_horarios[3]));
     persist_read_string(CLAVE5, matriz_horarios[4], sizeof(matriz_horarios[4]));
+      persist_read_string(CLAVE6, matriz_horarios[5], sizeof(matriz_horarios[5]));
+    persist_read_string(CLAVE7, matriz_horarios[6], sizeof(matriz_horarios[6]));
+    persist_read_string(CLAVE8, matriz_horarios[7], sizeof(matriz_horarios[7]));
+    persist_read_string(CLAVE9, matriz_horarios[8], sizeof(matriz_horarios[8]));
+    persist_read_string(CLAVE10, matriz_horarios[9], sizeof(matriz_horarios[9]));
+      persist_read_string(CLAVE11, matriz_horarios[10], sizeof(matriz_horarios[10]));
+    persist_read_string(CLAVE12, matriz_horarios[11], sizeof(matriz_horarios[11]));
+		APP_LOG(APP_LOG_LEVEL_DEBUG, "Para 1 es %s %s", matriz_horarios[0],matriz_horarios[1]);
+		APP_LOG(APP_LOG_LEVEL_DEBUG, "Para 2 es %s %s", matriz_horarios[2],matriz_horarios[3]);
+		APP_LOG(APP_LOG_LEVEL_DEBUG, "Para 3 es %s %s", matriz_horarios[4],matriz_horarios[5]);
+		APP_LOG(APP_LOG_LEVEL_DEBUG, "Para 4 es %s %s", matriz_horarios[6],matriz_horarios[7]);
+		APP_LOG(APP_LOG_LEVEL_DEBUG, "Para 5 es %s %s", matriz_horarios[8],matriz_horarios[9]);
+		APP_LOG(APP_LOG_LEVEL_DEBUG, "Para 6 es %s %s", matriz_horarios[10],matriz_horarios[11]);
+
+
+
       APP_LOG(APP_LOG_LEVEL_DEBUG, "Datos cargados. Sigo...");
 
 
@@ -516,7 +541,8 @@ void CapaLineas_update_callback(Layer *me, GContext* ctx)
       char temp_dia[4];
     
       
-      //subString (matriz_horarios[mes_a_pintar], (dia_a_pintar-1)*4, 4, dest);
+      subString (matriz_horarios[mes_a_pintar-1], (dia_a_pintar-1)*4, 4, dest);
+     /*
      if (mes_a_pintar==mes_actual)  
         subString (matriz_horarios[3], (dia_a_pintar-1)*4, 4, dest);
      else if (mes_a_pintar==mes_actual+1)
@@ -529,7 +555,7 @@ void CapaLineas_update_callback(Layer *me, GContext* ctx)
         subString (matriz_horarios[0], (dia_a_pintar-1)*4, 4, dest);
       else
         subString ("nnnn", 0, 4, dest);
-        
+       */ 
 
       snprintf(temp_dia, 4, "%i",dia_a_pintar);
       graphics_draw_text(ctx, temp_dia, fonts_get_system_font(FUENTE), GRect(0, 20+(x*22), 23, 7), GTextOverflowModeTrailingEllipsis, GTextAlignmentCenter, NULL);
@@ -733,13 +759,13 @@ void carga_calendario()
     CapaLineas = layer_create(bounds);
     layer_set_update_proc(CapaLineas, CapaLineas_update_callback); 
     layer_add_child(window_layer, CapaLineas); 
-    
+    /*
     persist_write_string(CLAVE1,"nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn");
     persist_write_string(CLAVE2,"nnnnnnnnnnLlnnLlnnD`nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn");
     persist_write_string(CLAVE3,"nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn");
     persist_write_string(CLAVE4,"0DojnnD`nnLd0Loj0LojmmmmnnD`nnLd0Lojmmmm0LojnnLlnnD`nnLd0Loj0DHjmmmmnnLl0DojnnD`nnLd0LojnnD`mmmmnnD`nnLd0LojmmmmnnLlnnLlnnD`");
     persist_write_string(CLAVE5,"nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn");
-
+*/
 
 }
 

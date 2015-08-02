@@ -13,6 +13,20 @@ static Window *window;
 
 static MenuLayer *menu_layer;
 
+enum {
+	KEY_MES,
+	KEY_HORARIO,
+	KEY_ERROR,
+};
+
+typedef struct {
+	int index;
+	char content[124];
+} Tipo_horario_recibido;
+
+static Tipo_horario_recibido horarios_recibidos[12];
+
+/*
 void process_tuple(Tuple *t)
 {
     int key = t->key;
@@ -21,7 +35,6 @@ void process_tuple(Tuple *t)
     strcpy(string_value, t->value->cstring);
     persist_write_string(key, string_value);
       APP_LOG(APP_LOG_LEVEL_DEBUG, "Escrita clave %d, con valor %s", key, string_value);
-
 }
 
 
@@ -47,7 +60,23 @@ void in_received_handler(DictionaryIterator *iter, void *context)
     layer_mark_dirty(menu_layer_get_layer(menu_layer));
 }
 
+*/
 
+static void in_received_handler(DictionaryIterator *iter, void *context) {
+	Tuple *index_tuple = dict_find(iter, KEY_MES);
+	Tuple *content_tuple = dict_find(iter, KEY_HORARIO);
+
+	if (index_tuple && content_tuple) {
+		Tipo_horario_recibido horario;
+		horario.index = index_tuple->value->int16;
+		strncpy(horario.content, content_tuple->value->cstring, sizeof(horario.content) - 1);
+		horarios_recibidos[horario.index] = horario;
+    persist_write_string(horario.index, horario.content);
+
+		APP_LOG(APP_LOG_LEVEL_DEBUG, "received story [%d] %s", horario.index, horario.content);
+	}
+
+}
 
 
 void send_int(int key, int cmd)
@@ -137,7 +166,16 @@ void menu_select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, void *da
     case 1:
       switch (cell_index->row) {
       case 0:
-         if (loading==0) send_int(5,5);
+         if (loading==0){
+           send_int(5,5);
+           char version[20];
+           time_t now = time(NULL);
+           struct tm *tick_time = localtime(&now); 
+           snprintf(version, 20, "Versión: %i-%i-%i",tick_time->tm_mday,(tick_time->tm_mon)+1,(tick_time->tm_year)-100); 
+           vibes_short_pulse();
+           loading = 0;
+           layer_mark_dirty(menu_layer_get_layer(menu_layer));
+         }
          break;
       }
       break;    
@@ -173,7 +211,7 @@ static void window_unload(Window *window) {
 
 int main(void) {
   window = window_create();
-	app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());		
+	app_message_open(192, 192);		
   app_message_register_inbox_received(in_received_handler);
   window_set_window_handlers(window, (WindowHandlers) {
     .load = window_load,
