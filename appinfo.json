@@ -1,10 +1,6 @@
 {
     "appKeys": {
-        "clave1": 1,
-        "clave2": 2,
-        "clave3": 3,
-        "clave4": 4,
-        "clave5": 5
+        "clave1": 1
     },
     "capabilities": [
         ""
@@ -48,7 +44,7 @@
         "aplite",
         "basalt"
     ],
-    "uuid": "1e0dd4b8-d228-43a0-9e18-3c4db3db419e",
+    "uuid": "2565dd49-8283-458e-b523-2e6e9270e33f",
     "versionLabel": "1.0",
     "watchapp": {
         "watchface": false

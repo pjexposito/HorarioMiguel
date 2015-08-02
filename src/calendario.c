@@ -373,35 +373,17 @@ void anade_datos(const char* input, int mes)
 void carga_datos()
 {
     
-    char username[64];
-  
-    persist_read_string(CLAVE1, matriz_horarios[0], 125);
-    persist_read_string(CLAVE2, matriz_horarios[1], 125);
-    persist_read_string(CLAVE3, matriz_horarios[2], 125);
-    persist_read_string(CLAVE4, matriz_horarios[3], 125);
-    persist_read_string(CLAVE5, matriz_horarios[4], 125);
+      APP_LOG(APP_LOG_LEVEL_DEBUG, "Estoy en carga datos");
+
+    persist_read_string(CLAVE1, matriz_horarios[0], sizeof(matriz_horarios[0]));
+    persist_read_string(CLAVE2, matriz_horarios[1], sizeof(matriz_horarios[1]));
+    persist_read_string(CLAVE3, matriz_horarios[2], sizeof(matriz_horarios[2]));
+    persist_read_string(CLAVE4, matriz_horarios[3], sizeof(matriz_horarios[3]));
+    persist_read_string(CLAVE5, matriz_horarios[4], sizeof(matriz_horarios[4]));
+      APP_LOG(APP_LOG_LEVEL_DEBUG, "Datos cargados. Sigo...");
 
 
 
-    persist_read_string(0, username, sizeof(username));
-    if (strcmp(username, "")==0)
-    {
-        chkturnos=1;
-    }
-    else
-    {
-      for (int x=0;x<MESES_TURNOS;x++)
-      {
-        memset(username, 0, 64);
-        persist_read_string(x, username, sizeof(username));
-        if (strcmp(username, "")!=0)
-          {
-          anade_datos(username, x);
-          //APP_LOG(APP_LOG_LEVEL_DEBUG, "%s", username);
-          }
-      }
-
-    }
 }
 
 
@@ -534,9 +516,10 @@ void CapaLineas_update_callback(Layer *me, GContext* ctx)
       char temp_dia[4];
     
       
-        subString (matriz_horarios[mes_a_pintar], (dia_a_pintar-1)*4, 4, dest);
-     
-     /*else if (mes_a_pintar==mes_actual+1)
+      //subString (matriz_horarios[mes_a_pintar], (dia_a_pintar-1)*4, 4, dest);
+     if (mes_a_pintar==mes_actual)  
+        subString (matriz_horarios[3], (dia_a_pintar-1)*4, 4, dest);
+     else if (mes_a_pintar==mes_actual+1)
         subString (matriz_horarios[4], (dia_a_pintar-1)*4, 4, dest);
       else if (mes_a_pintar==mes_actual-1)
         subString (matriz_horarios[2], (dia_a_pintar-1)*4, 4, dest);
@@ -546,7 +529,7 @@ void CapaLineas_update_callback(Layer *me, GContext* ctx)
         subString (matriz_horarios[0], (dia_a_pintar-1)*4, 4, dest);
       else
         subString ("nnnn", 0, 4, dest);
-        */
+        
 
       snprintf(temp_dia, 4, "%i",dia_a_pintar);
       graphics_draw_text(ctx, temp_dia, fonts_get_system_font(FUENTE), GRect(0, 20+(x*22), 23, 7), GTextOverflowModeTrailingEllipsis, GTextAlignmentCenter, NULL);
@@ -750,13 +733,13 @@ void carga_calendario()
     CapaLineas = layer_create(bounds);
     layer_set_update_proc(CapaLineas, CapaLineas_update_callback); 
     layer_add_child(window_layer, CapaLineas); 
-    /*
+    
     persist_write_string(CLAVE1,"nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn");
     persist_write_string(CLAVE2,"nnnnnnnnnnLlnnLlnnD`nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn");
     persist_write_string(CLAVE3,"nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn");
     persist_write_string(CLAVE4,"0DojnnD`nnLd0Loj0LojmmmmnnD`nnLd0Lojmmmm0LojnnLlnnD`nnLd0Loj0DHjmmmmnnLl0DojnnD`nnLd0LojnnD`mmmmnnD`nnLd0LojmmmmnnLlnnLlnnD`");
     persist_write_string(CLAVE5,"nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn");
-*/
+
 
 }
 

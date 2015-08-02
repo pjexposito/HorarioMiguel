@@ -99,9 +99,13 @@ function procesa_csv(url)
   var data13 = datos_dic[0];
   var data14 =datos_dic[0];
   
-  var dict = {"0" : data0, "1": data1, "2": data2, "3": data3, "4": data4, "5": data5, "6": data6, "7": data7, "8": data8, "9": data9, "10": data10, "11": data11, "12": data12, "13": data13, "14": data14};
+  //var dict = {"0" : data0};
 
-    
+    // Vale, ya se el bug. No se pueden enviar más de 124 bytes :(
+    // Yo estaba mandando un dic de 124bytes * 14: Por eso petaba
+    // pruebo a mandar menos datos
+      var dict = {"0" : "DojnnD`nnLd0Loj0LojmmmmnnD`nnLd0Lojmmmm0LojnnLlnnD`nnLd0Loj0DHjmmmmnnLl0DojnnD`nnLd0LojnnD`mmmmnnD"};
+
 	Pebble.sendAppMessage(dict);
 	}
 
