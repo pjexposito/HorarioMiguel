@@ -66,14 +66,16 @@ static void in_received_handler(DictionaryIterator *iter, void *context) {
 	Tuple *index_tuple = dict_find(iter, KEY_MES);
 	Tuple *content_tuple = dict_find(iter, KEY_HORARIO);
 
+  
 	if (index_tuple && content_tuple) {
 		Tipo_horario_recibido horario;
 		horario.index = index_tuple->value->int16;
 		strncpy(horario.content, content_tuple->value->cstring, sizeof(horario.content) - 1);
 		horarios_recibidos[horario.index] = horario;
-    persist_write_string(horario.index, horario.content);
+  
+      persist_write_string(horario.index, horario.content);
+      APP_LOG(APP_LOG_LEVEL_DEBUG, "Grabado %s en %d", horario.content, horario.index);
 
-		APP_LOG(APP_LOG_LEVEL_DEBUG, "received story [%d] %s", horario.index, horario.content);
 	}
 
 }
@@ -211,7 +213,7 @@ static void window_unload(Window *window) {
 
 int main(void) {
   window = window_create();
-	app_message_open(192, 192);		
+	app_message_open(192 /* inbound_size */, 100 /* outbound_size */);
   app_message_register_inbox_received(in_received_handler);
   window_set_window_handlers(window, (WindowHandlers) {
     .load = window_load,

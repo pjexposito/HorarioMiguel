@@ -76,7 +76,7 @@ int turnos[20][33];
 char horario_actual[125], horario_mas1[125], horario_menos1[125], horario_menos2[125], horario_menos3[125];
 int cargando=0;
 
-char matriz_horarios[12][125];
+char matriz_horarios[12][130];
 
 
 
@@ -396,17 +396,9 @@ void carga_datos()
     persist_read_string(CLAVE10, matriz_horarios[9], sizeof(matriz_horarios[9]));
       persist_read_string(CLAVE11, matriz_horarios[10], sizeof(matriz_horarios[10]));
     persist_read_string(CLAVE12, matriz_horarios[11], sizeof(matriz_horarios[11]));
-		APP_LOG(APP_LOG_LEVEL_DEBUG, "Para 1 es %s %s", matriz_horarios[0],matriz_horarios[1]);
-		APP_LOG(APP_LOG_LEVEL_DEBUG, "Para 2 es %s %s", matriz_horarios[2],matriz_horarios[3]);
-		APP_LOG(APP_LOG_LEVEL_DEBUG, "Para 3 es %s %s", matriz_horarios[4],matriz_horarios[5]);
-		APP_LOG(APP_LOG_LEVEL_DEBUG, "Para 4 es %s %s", matriz_horarios[6],matriz_horarios[7]);
-		APP_LOG(APP_LOG_LEVEL_DEBUG, "Para 5 es %s %s", matriz_horarios[8],matriz_horarios[9]);
-		APP_LOG(APP_LOG_LEVEL_DEBUG, "Para 6 es %s %s", matriz_horarios[10],matriz_horarios[11]);
-
 
 
       APP_LOG(APP_LOG_LEVEL_DEBUG, "Datos cargados. Sigo...");
-
 
 
 }
@@ -758,9 +750,23 @@ void carga_calendario()
     //Se añade la CapaLineas
     CapaLineas = layer_create(bounds);
     layer_set_update_proc(CapaLineas, CapaLineas_update_callback); 
-    layer_add_child(window_layer, CapaLineas); 
+    layer_add_child(window_layer, CapaLineas);
+      persist_write_string(CLAVE1,"nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn");
+    persist_write_string(CLAVE2,"nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn");
+    persist_write_string(CLAVE3,"nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn");
+    persist_write_string(CLAVE4,"nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn");
+    persist_write_string(CLAVE5,"nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn");
+    persist_write_string(CLAVE6,"nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn");
+    persist_write_string(CLAVE7,"nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn");
+
+      persist_write_string(CLAVE8,"nnnnnnnnmmmmnnPjnnPjnnH`nnZfnnHd0Holnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn");
+    persist_write_string(CLAVE9,"nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn");
+    persist_write_string(CLAVE10,"nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn");
+    persist_write_string(CLAVE11,"nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn");
+    persist_write_string(CLAVE12,"nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn");
+
     /*
-    persist_write_string(CLAVE1,"nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn");
+    persist_write_string(CLAVE8,"nnnnnnnnmmmmnnPjnnPjnnH`nnZfnnHd0Holnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn");
     persist_write_string(CLAVE2,"nnnnnnnnnnLlnnLlnnD`nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn");
     persist_write_string(CLAVE3,"nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn");
     persist_write_string(CLAVE4,"0DojnnD`nnLd0Loj0LojmmmmnnD`nnLd0Lojmmmm0LojnnLlnnD`nnLd0Loj0DHjmmmmnnLl0DojnnD`nnLd0LojnnD`mmmmnnD`nnLd0LojmmmmnnLlnnLlnnD`");

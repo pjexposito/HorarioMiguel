@@ -41,7 +41,7 @@ function sendAppMessage() {
 		currentAppMessage.numTries = currentAppMessage.numTries || 0;
 		currentAppMessage.transactionId = currentAppMessage.transactionId || -1;
 		if (currentAppMessage.numTries < maxAppMessageTries) {
-			console.log('Sending AppMessage to Pebble: ' + JSON.stringify(currentAppMessage.message));
+			//console.log('Sending AppMessage to Pebble: ' + JSON.stringify(currentAppMessage.message));
 			Pebble.sendAppMessage(
 				currentAppMessage.message,
 				function(e) {
@@ -115,11 +115,10 @@ function procesa_csv(url)
           array_final = array_final+sumatorio_horario[l][n];
         }
         // AQUI SE AÑADE AL DICCIONARIO QUE SE MANDARÁ AL PEBBLE
-        console.log("Array creada para mes "+l+": "+array_final);
+        //console.log("Array creada para mes "+l+": "+array_final);
         datos_dic[l-1] = array_final;
         
-        appMessageQueue.push({'message': {'mes': l*2-2, 'horario': array_final.substring(0,50)}});
-        appMessageQueue.push({'message': {'mes': l*2-1, 'horario': array_final.substring(51,array_final.length)}});
+        appMessageQueue.push({'message': {'mes': l, 'horario': array_final.substring(0,159)}});
 
       }
       //var dict = {"0" : datos_dic[0], "1": datos_dic[1], "2": datos_dic[2]};
